@@ -82,9 +82,27 @@ describe('Comments API', () => {
       
       expect(response.status).toBe(200);
       expect(response.body.data).toHaveProperty('id');
-      
+
       testCommentId = response.body.data.id;      
       testCommentId = response.body.data.id;
+    });
+  });
+
+    /**
+   * Test suite for reading comments
+   * @description Tests the functionality of reading comments
+   */
+  describe('Read Comments', () => {
+    test('should allow public read access to comments', async () => {
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .get('/items/comments')
+        .query({ 
+          filter: JSON.stringify({ book_id: { _eq: testBookId } }),
+          limit: 1 
+        });
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('data');
     });
   });
 
