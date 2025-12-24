@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Administrator",
+    "icon": "verified",
+    "description": "$t:admin_description",
+    "ip_access": null,
+    "enforce_tfa": false,
+    "admin_access": true,
+    "app_access": true,
+    "roles": [
+      {
+        "role": "_sync_default_admin_role",
+        "sort": null
+      }
+    ],
+    "_syncId": "_sync_default_admin_policy"
+  },
+  {
+    "name": "$t:public_label",
+    "icon": "public",
+    "description": "$t:public_description",
+    "ip_access": null,
+    "enforce_tfa": false,
+    "admin_access": false,
+    "app_access": false,
+    "roles": [
+      {
+        "role": null,
+        "sort": 1
+      }
+    ],
+    "_syncId": "2e57d6b5-c8ca-47d4-b94c-4974f3b18c74"
+  },
+  {
+    "name": "user access control",
+    "icon": "badge",
+    "description": null,
+    "ip_access": null,
+    "enforce_tfa": false,
+    "admin_access": false,
+    "app_access": true,
+    "roles": [
+      {
+        "role": "027a50f0-3d29-45fb-a66a-d95a85b38d5e",
+        "sort": 1
+      }
+    ],
+    "_syncId": "9eb3cd16-8ca2-47bb-8f2c-98540aad96bf"
+  }
+]

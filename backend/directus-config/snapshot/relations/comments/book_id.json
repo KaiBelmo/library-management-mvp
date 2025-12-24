@@ -1,0 +1,25 @@
+{
+  "collection": "comments",
+  "field": "book_id",
+  "related_collection": "books",
+  "meta": {
+    "junction_field": null,
+    "many_collection": "comments",
+    "many_field": "book_id",
+    "one_allowed_collections": null,
+    "one_collection": "books",
+    "one_collection_field": null,
+    "one_deselect_action": "nullify",
+    "one_field": null,
+    "sort_field": null
+  },
+  "schema": {
+    "table": "comments",
+    "column": "book_id",
+    "foreign_key_table": "books",
+    "foreign_key_column": "id",
+    "constraint_name": "comments_book_id_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "CASCADE"
+  }
+}
