@@ -45,5 +45,29 @@ services:
       retries: 10
       start_interval: 5s
       start_period: 30s
+  
+  directus-sync:
+    image: node:22-alpine
+    depends_on:
+      directus:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DIRECTUS_URL: http://directus:${CONTAINER_PORT}
+      DIRECTUS_EMAIL: ${ADMIN_EMAIL}
+      DIRECTUS_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - ./directus-config:/directus/directus-config
+      - ./directus-sync.config.cjs:/directus/directus-sync.config.cjs
+    working_dir: /directus
+    command: >
+      sh -c "
+        echo 'PWD:' && pwd;
+        echo 'Directory contents:' && ls -la;
+        echo 'Config file:' && ls -la directus-sync.config.cjs || true;
+        npx directus-sync push;
+      "
+    restart: "no"
+
 volumes:
   db_data:
