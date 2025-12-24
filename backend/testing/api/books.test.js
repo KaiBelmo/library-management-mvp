@@ -118,7 +118,7 @@ describe('Books API', () => {
     });
   });
 
-    /**
+  /**
    * Authenticated user access rules for Books
    * @description Verifies that users can create and read books,
    * and can only update or delete records they own.
@@ -184,5 +184,4 @@ describe('Books API', () => {
       expect(response.status).toBe(403);
     });
   });
-  
 });
