@@ -106,4 +106,24 @@ describe('Comments API', () => {
     });
   });
 
+    /**
+   * Test suite for updating comments
+   * @description Tests the functionality of updating comments
+   *  - verifies that regular users cannot update comments
+   */
+  describe('Update Comment', () => {
+    test('should not allow users to update comments', async () => {
+      const updatedContent = 'Attempted update';
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .patch(`/items/comments/${testCommentId}`)
+        .set(getAuthHeader(testUserToken))
+        .send({ 
+          content: updatedContent,
+          date_updated: new Date().toISOString()
+        });
+
+        expect(response.status).toBe(403);
+    });
+  });
+
 });
