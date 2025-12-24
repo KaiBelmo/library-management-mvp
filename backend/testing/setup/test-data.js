@@ -17,5 +17,15 @@ const createTestBook = () => {
   };
 };
 
+const createTestComment = (bookId, user) => {
+  if (!bookId) throw new Error('bookId is required');
+  if (!user) throw new Error('user object is required');
+  
+  return {
+    book_id: bookId,
+    author_name: `${user.first_name} ${user.last_name}`.trim(),
+    content: 'This is a test comment',
+  };
+};
 
-module.exports = { createTestUser, createTestBook };
+module.exports = { createTestUser, createTestBook, createTestComment };
