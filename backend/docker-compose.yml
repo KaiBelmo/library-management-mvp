@@ -16,7 +16,7 @@ services:
       retries: 10
 
   directus:
-    image: directus/directus:latest
+    build: .
     restart: unless-stopped
     depends_on:
       db:
