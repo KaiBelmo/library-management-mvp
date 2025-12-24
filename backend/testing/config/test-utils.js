@@ -23,8 +23,14 @@ const registerUser = async (userData) => {
     });
 };
 
+const getAuthHeader = (token) => ({
+  'Authorization': `Bearer ${token}`,
+  'Content-Type': 'application/json'
+});
+
 module.exports = {
   login,
   loginAsAdmin,
   registerUser,
+  getAuthHeader,
 };
