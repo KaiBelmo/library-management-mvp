@@ -20,8 +20,7 @@ backend/
 ├── directus-config/       # Directus configuration files
 │   ├── collections/       # Collection definitions
 │   ├── snapshot/          # Database snapshots
-│   ├── specs/             # API specifications
-│   └── ...               # Other Directus configs
+│   └── specs/             # API specifications
 ├── directus-sync.config.cjs  # Directus sync configuration
 └── testing/               # Backend tests
     ├── api/               # API test files
