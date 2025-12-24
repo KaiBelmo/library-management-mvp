@@ -1,0 +1,84 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+.vscode/*
+!.vscode/extensions.json
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node / JS (global)
+node_modules/
+npm-cache/
+.pnpm-store/
+.pnpm-debug.log*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Backend (Directus)
+backend/node_modules/
+backend/.directus/
+backend/uploads/
+backend/extensions/.cache/
+
+# Directus local state / cache
+.directus/
+uploads/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.cache/
+frontend/.next/
+frontend/.nuxt/
+frontend/.svelte-kit/
+
+# Testing
+testing/node_modules/
+e2e/node_modules/
+coverage/
+.nyc_output/
+
+# Docker
+**/docker-data/
+**/data/
+**/volumes/
+
+# Docker override files (local only)
+docker-compose.override.yml
+docker-compose.*.override.yml
+
+# Temporary / Runtime
+tmp/
+temp/
+.cache/
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Security
+*.pem
+*.key
+*.crt
+secrets/
