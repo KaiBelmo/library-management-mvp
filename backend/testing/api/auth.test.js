@@ -1,6 +1,6 @@
 const request = require('supertest');
-const { 
-  registerUser, 
+const {
+  registerUser,
   loginAsAdmin,
 } = require('../config/test-utils');
 const { TEST_CONFIG } = require('../config/test-setup');
@@ -22,7 +22,7 @@ describe('Authentication API', () => {
     await registerUser(TEST_USER);
   });
 
-    describe('User Registration', () => {
+  describe('User Registration', () => {
     /**
      * tests the behavior when attempting to register with a duplicate email
      * - registers a new user
@@ -38,9 +38,9 @@ describe('Authentication API', () => {
         ...existingUser,
         password: 'DifferentPassword123!'
       };
-      
+
       const secondResponse = await registerUser(duplicateUser);
-      
+
       if (secondResponse.status === 204) {
         const loginResponse = await request(TEST_CONFIG.DIRECTUS_URL)
           .post('/auth/login')
@@ -48,7 +48,7 @@ describe('Authentication API', () => {
             email: existingUser.email,
             password: existingUser.password
           });
-        
+
         expect([200, 401]).toContain(loginResponse.status);
       } else {
         expect(secondResponse.status).toBe(400);
@@ -66,10 +66,10 @@ describe('Authentication API', () => {
           email: TEST_USER.email,
           password: TEST_USER.password
         });
-      
+
       expect(response.status).toBe(200);
       expect(response.body.data).toHaveProperty('access_token');
-      
+
       testUserToken = response.body.data.access_token;
     });
 
@@ -80,8 +80,19 @@ describe('Authentication API', () => {
           email: TEST_USER.email,
           password: 'wrongpassword'
         });
-      
+
       expect(response.status).toBe(401);
+    });
+  });
+
+  describe('User Profile', () => {
+    test('should get user profile with valid token', async () => {
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .get('/users/me')
+        .set('Authorization', `Bearer ${testUserToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveProperty('id');
     });
   });
 });
