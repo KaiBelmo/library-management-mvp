@@ -15,5 +15,27 @@ services:
       timeout: 5s
       retries: 10
 
+  directus:
+    image: directus/directus:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      KEY: ${KEY}
+      SECRET: ${SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      DB_CLIENT: ${DB_CLIENT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      MARKETPLACE_TRUST: ${MARKETPLACE_TRUST}
+      PORT: ${CONTAINER_PORT}
+    ports:
+      - "${HOST_PORT}:${CONTAINER_PORT}"
 volumes:
   db_data:
