@@ -37,5 +37,13 @@ services:
       PORT: ${CONTAINER_PORT}
     ports:
       - "${HOST_PORT}:${CONTAINER_PORT}"
+    # https://github.com/directus/docs/issues/331#issuecomment-3190266688
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(wget -q -O - http://directus:${CONTAINER_PORT}/server/ping) = 'pong' ]"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_interval: 5s
+      start_period: 30s
 volumes:
   db_data:
