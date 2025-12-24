@@ -14,6 +14,47 @@ const { createTestBook, createTestUser } = require('../setup/test-data');
  * including public read access, admin full access, and user ownership-based permissions.
  */
 describe('Books API', () => {
+  let adminToken;
+  let adminBookId;
+
+  let userToken;
+  let otherUserToken;
+  let userBookId;
+  let otherUserBookId;
+
+  const adminBook = createTestBook();
+  const user = createTestUser();
+  const otherUser = createTestUser();
+
+  beforeAll(async () => {
+    adminToken = await loginAsAdmin();
+
+    await registerUser(user);
+    await registerUser(otherUser);
+
+    userToken = await login(user.email, user.password);
+    otherUserToken = await login(otherUser.email, otherUser.password);
+  });
+
+  afterAll(async () => {
+    if (adminBookId) {
+      await request(TEST_CONFIG.DIRECTUS_URL)
+        .delete(`/items/books/${adminBookId}`)
+        .set(getAuthHeader(adminToken));
+    }
+
+    if (userBookId) {
+      await request(TEST_CONFIG.DIRECTUS_URL)
+        .delete(`/items/books/${userBookId}`)
+        .set(getAuthHeader(userToken));
+    }
+
+    if (otherUserBookId) {
+      await request(TEST_CONFIG.DIRECTUS_URL)
+        .delete(`/items/books/${otherUserBookId}`)
+        .set(getAuthHeader(otherUserToken));
+    }
+  });
 
   /**
    * Public access rules for Books
@@ -38,4 +79,43 @@ describe('Books API', () => {
       expect(response.status).toBe(403);
     });
   });
+
+  /**
+   * Administrative access rules for Books
+   * @description Ensures administrators have full CRUD permissions
+   * on the Books collection.
+  */
+  describe('Admin Access', () => {
+    test('should allow admin to create a book', async () => {
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .post('/items/books')
+        .set(getAuthHeader(adminToken))
+        .send(adminBook);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toMatchObject({
+        title: adminBook.title,
+        author: adminBook.author,
+        genre: adminBook.genre,
+        publication_date: expect.stringContaining(
+          new Date(adminBook.publication_date).toISOString().split('T')[0]
+        ),
+      });
+
+      adminBookId = response.body.data.id;
+    });
+
+    test('should allow admin to update a book', async () => {
+      const updatedTitle = 'Updated ' + adminBook.title;
+
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .patch(`/items/books/${adminBookId}`)
+        .set(getAuthHeader(adminToken))
+        .send({ title: updatedTitle });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.title).toBe(updatedTitle);
+    });
+  });
+  
 });
