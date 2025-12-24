@@ -117,5 +117,72 @@ describe('Books API', () => {
       expect(response.body.data.title).toBe(updatedTitle);
     });
   });
+
+    /**
+   * Authenticated user access rules for Books
+   * @description Verifies that users can create and read books,
+   * and can only update or delete records they own.
+  */
+  describe('User Access', () => {
+    test('user can create a book', async () => {
+      const book = createTestBook();
+
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .post('/items/books')
+        .set(getAuthHeader(userToken))
+        .send(book);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.title).toBe(book.title);
+      expect(response.body.data.user_created).toBeDefined();
+
+      userBookId = response.body.data.id;
+    });
+
+    test('user can read books', async () => {
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .get('/items/books')
+        .set(getAuthHeader(userToken));
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('data');
+    });
+
+    test('user can update own book', async () => {
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .patch(`/items/books/${userBookId}`)
+        .set(getAuthHeader(userToken))
+        .send({ title: 'User Updated Book' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.title).toBe('User Updated Book');
+    });
+
+    test('user cannot update another user’s book', async () => {
+      const book = createTestBook();
+
+      const createResponse = await request(TEST_CONFIG.DIRECTUS_URL)
+        .post('/items/books')
+        .set(getAuthHeader(otherUserToken))
+        .send(book);
+
+      otherUserBookId = createResponse.body.data.id;
+
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .patch(`/items/books/${otherUserBookId}`)
+        .set(getAuthHeader(userToken))
+        .send({ title: 'Illegal Update' });
+
+      expect(response.status).toBe(403);
+    });
+
+    test('user cannot delete another user’s book', async () => {
+      const response = await request(TEST_CONFIG.DIRECTUS_URL)
+        .delete(`/items/books/${otherUserBookId}`)
+        .set(getAuthHeader(userToken));
+
+      expect(response.status).toBe(403);
+    });
+  });
   
 });
