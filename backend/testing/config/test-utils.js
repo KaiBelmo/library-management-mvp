@@ -5,6 +5,10 @@ const login = async (email, password) => {
   const response = await request(TEST_CONFIG.DIRECTUS_URL)
     .post('/auth/login')
     .send({ email, password });
+  if (response.status !== 200 || !response.body?.data?.access_token) {
+    console.error('Login failed:', response.status, response.body);
+    throw new Error(`Login failed for ${email}: ${response.status}`);
+  }
   return response.body.data.access_token;
 };
 
