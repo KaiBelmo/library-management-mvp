@@ -28,9 +28,22 @@ const getAuthHeader = (token) => ({
   'Content-Type': 'application/json'
 });
 
+const createAndLoginUser = async (userData) => {
+  await registerUser(userData);
+  
+  const token = await login(userData.email, userData.password);
+  
+  return {
+    email: userData.email,
+    password: userData.password,
+    token
+  };
+};
+
 module.exports = {
   login,
   loginAsAdmin,
   registerUser,
   getAuthHeader,
+  createAndLoginUser
 };
