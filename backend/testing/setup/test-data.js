@@ -7,4 +7,15 @@ const createTestUser = () => ({
   last_name: 'User',
 });
 
-module.exports = { createTestUser };
+const createTestBook = () => {
+  const currentDate = new Date();
+  return {
+    title: `Test Book ${Math.floor(Math.random() * 1000)}`,
+    author: 'Test Author',
+    genre: 'Fiction',
+    publication_date: currentDate.toISOString()
+  };
+};
+
+
+module.exports = { createTestUser, createTestBook };
