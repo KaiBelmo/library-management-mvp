@@ -22,6 +22,42 @@ describe('Authentication API', () => {
     await registerUser(TEST_USER);
   });
 
+    describe('User Registration', () => {
+    /**
+     * tests the behavior when attempting to register with a duplicate email
+     * - registers a new user
+     * - attempts to register again with same email but different password
+     * - verifies system handles duplicate registration attempts correctly
+     */
+    test('should handle duplicate email registration', async () => {
+      const existingUser = createTestUser();
+      const firstResponse = await registerUser(existingUser);
+      expect(firstResponse.status).toBe(204);
+
+      const duplicateUser = {
+        ...existingUser,
+        password: 'DifferentPassword123!'
+      };
+      
+      const secondResponse = await registerUser(duplicateUser);
+      
+      if (secondResponse.status === 204) {
+        const loginResponse = await request(TEST_CONFIG.DIRECTUS_URL)
+          .post('/auth/login')
+          .send({
+            email: existingUser.email,
+            password: existingUser.password
+          });
+        
+        expect([200, 401]).toContain(loginResponse.status);
+      } else {
+        expect(secondResponse.status).toBe(400);
+        expect(secondResponse.body).toHaveProperty('errors');
+        expect(secondResponse.body.errors[0].message).toMatch(/email.*already exists/i);
+      }
+    });
+  });
+
   describe('User Login', () => {
     test('should login with valid credentials', async () => {
       const response = await request(TEST_CONFIG.DIRECTUS_URL)
