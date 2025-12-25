@@ -13,11 +13,14 @@ export default defineNuxtConfig({
   },
   directus: {
     url: process.env.DIRECTUS_URL,
+    autoFetch: true,
   },
 
   runtimeConfig: {
     public: {
-      directusUrl: process.env.DIRECTUS_URL
+      directusUrl: process.env.DIRECTUS_URL,
+      corsEnabled: process.env.CORS_ENABLED,
+      corsOrigin: process.env.CORS_ORIGIN
     }
   },
 
