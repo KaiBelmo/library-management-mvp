@@ -11,6 +11,13 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
+  runtimeConfig: {
+    public: {
+      directus: {
+        url: process.env.DIRECTUS_URL
+      }
+    }
+  },
 
-  modules: ['@nuxt/eslint', '@nuxt/ui'],
+  modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-directus'],
 })
