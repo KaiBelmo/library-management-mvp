@@ -11,11 +11,13 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
+  directus: {
+    url: process.env.DIRECTUS_URL,
+  },
+
   runtimeConfig: {
     public: {
-      directus: {
-        url: process.env.DIRECTUS_URL
-      }
+      directusUrl: process.env.DIRECTUS_URL
     }
   },
 
