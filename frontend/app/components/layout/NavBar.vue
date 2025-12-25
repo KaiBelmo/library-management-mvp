@@ -41,7 +41,7 @@
             <div v-if="isAuthenticated" class="hidden sm:flex flex-col items-end border-r border-stone-200 pr-6">
               <span class="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Librarian</span>
               <NuxtLink to="/profile" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <span class="text-sm font-semibold text-stone-800">{{ currentUser?.name }}</span>
+                <span class="text-sm font-semibold text-stone-800">{{ fullName }}</span>
                 <div 
                   v-if="currentUser?.isAdmin" 
                   class="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"
@@ -151,7 +151,19 @@
 </template>
 
 <script setup>
+import { storeToRefs } from 'pinia'
+import { useAuthStore } from '~/stores/auth' 
+
 const mobileMenuOpen = ref(false)
+const authStore = useAuthStore()
+
+
+const {
+  currentUser,
+  isAuthenticated,
+  isLoading,
+  fullName
+} = storeToRefs(authStore)
 
 const navigation = [
   { label: 'Collection', path: '/books' },
@@ -159,7 +171,7 @@ const navigation = [
   { label: 'Profile', path: '/profile' },
 ]
 
-const handleLogout = () => {
+const handleLogout = async () => {
   mobileMenuOpen.value = false
   navigateTo('/login')
 }
