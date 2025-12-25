@@ -8,4 +8,12 @@ export const RegisterSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters')
 })
 
+
+export const UpdateProfileSchema = z.object({
+  first_name: z.string().min(1).optional(),
+  last_name: z.string().min(1).optional(),
+  email: z.string().email().optional(),
+  password: z.string().min(6).optional()
+});
+
 export type RegisterInput = z.infer<typeof RegisterSchema>
