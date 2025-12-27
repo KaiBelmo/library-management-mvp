@@ -31,7 +31,6 @@ import NavBar from '~/components/layout/NavBar.vue'
 </script>
 
 <style>
-/* Smooth transitions for the entire app */
 .page-enter-active,
 .page-leave-active {
   transition: all 0.3s ease-out;
@@ -41,8 +40,6 @@ import NavBar from '~/components/layout/NavBar.vue'
   opacity: 0;
   transform: translateY(10px);
 }
-
-/* Custom Scrollbar for the Gallery Look */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -50,6 +47,6 @@ import NavBar from '~/components/layout/NavBar.vue'
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1c1917; /* stone-900 */
+  background: #1c1917; 
 }
 </style>
