@@ -21,12 +21,22 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: (state) => state.status === 'authenticated',
     isGuest: (state) => state.status === 'guest',
     isLoading: (state) => state.status === 'loading',
+    isAdmin: (state) => {
+      if (!state.user || !state.user.role) return false
+      if (typeof state.user.role === 'string') {
+        // TODO: CHANGE THIS TO ENV VARIABLES 
+        const ADMIN_ROLE_ID = "d120852a-6da0-4169-85f1-44423f235272"
+        return state.user?.role=== ADMIN_ROLE_ID
+      }
+      return false
+    },
     fullName: (state) => {
       if (!state.user) return null
       const firstName = state.user.first_name || ''
       const lastName = state.user.last_name || ''
       return firstName || lastName ? `${firstName} ${lastName}`.trim() : state.user.email
     },
+
   },
 
   actions: {
@@ -52,6 +62,7 @@ export const useAuthStore = defineStore('auth', {
     async hydrateAuthState() {
       this.setLoading()
       const { fetchUser } = useDirectusAuth()
+
       try {
         const user = await fetchUser()
         if (user) {
@@ -64,14 +75,6 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         this.setGuest()
       }
-    },
-
-    async logout() {
-      const { logout } = useDirectusAuth()
-      await logout()
-      this.user = null
-      this.status = 'guest'
-      navigateTo('/login')
     },
   },
 })
