@@ -26,7 +26,6 @@
         </NuxtLink>
 
         <div class="hidden md:flex items-center gap-10">
-          <ClientOnly>
             <NuxtLink
               v-for="link in navigation"
               :key="link.path"
@@ -44,51 +43,50 @@
                 class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-amber-600"
               />
             </NuxtLink>
-          </ClientOnly>
         </div>
 
         <div class="flex items-center gap-6">
-          <ClientOnly>
-            <div
-              v-if="isAuthenticated"
-              class="hidden sm:flex flex-col items-end border-r border-stone-200 pr-6"
+          <div v-if="isLoading" class="hidden sm:flex items-center gap-4">
+            <div class="w-16 h-8 bg-stone-200 animate-pulse rounded"></div>
+            <div class="w-20 h-8 bg-stone-900 animate-pulse rounded"></div>
+          </div>
+          <div
+            v-else-if="isAuthenticated"
+            class="hidden sm:flex flex-col items-end border-r border-stone-200 pr-6"
+          >
+            <span
+              class="text-[10px] uppercase tracking-widest text-stone-400 font-bold"
+              >Librarian</span
             >
-              <span
-                class="text-[10px] uppercase tracking-widest text-stone-400 font-bold"
-                >Librarian</span
-              >
-              <NuxtLink
-                to="/profile"
-                class="flex items-center gap-2 hover:opacity-80 transition-opacity"
-              >
-                <span class="text-sm font-semibold text-stone-800">{{
-                  fullName
-                }}</span>
-                <div
-                  v-if="currentUser?.isAdmin"
-                  class="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"
-                  title="Admin Access"
-                />
-              </NuxtLink>
-            </div>
+            <NuxtLink
+              to="/profile"
+              class="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              <span class="text-sm font-semibold text-stone-800">{{ fullName }}</span>
+              <div
+                v-if="isAdminUser"
+                class="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"
+                title="Admin Access"
+              />
+            </NuxtLink>
+          </div>
 
-            <div v-else class="hidden sm:flex items-center gap-4">
-              <NuxtLink to="/login">
-                <button
-                  class="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-600 hover:text-stone-900 transition-colors"
-                >
-                  Sign In
-                </button>
-              </NuxtLink>
-              <NuxtLink to="/register">
-                <button
-                  class="px-4 py-2 bg-stone-900 text-stone-50 text-[10px] font-black uppercase tracking-widest hover:bg-stone-800 transition-all"
-                >
-                  Register
-                </button>
-              </NuxtLink>
-            </div>
-          </ClientOnly>
+          <div v-else class="hidden sm:flex items-center gap-4">
+            <NuxtLink to="/login">
+              <button
+                class="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-600 hover:text-stone-900 transition-colors"
+              >
+                Sign In
+              </button>
+            </NuxtLink>
+            <NuxtLink to="/register">
+              <button
+                class="px-4 py-2 bg-stone-900 text-stone-50 text-[10px] font-black uppercase tracking-widest hover:bg-stone-800 transition-all"
+              >
+                Register
+              </button>
+            </NuxtLink>
+          </div>
 
           <button
             class="p-2 text-stone-600 md:hidden hover:bg-stone-100 rounded-full transition-colors"
@@ -203,10 +201,13 @@
 <script setup>
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "~/stores/auth";
+import { useAdmin } from "~/composables/useAdmin";
+import { useAuth } from "~/composables/useAuth";
 
 const mobileMenuOpen = ref(false);
 const authStore = useAuthStore();
-const { logout } = useDirectusAuth();
+const { logout } = useAuth();
+const { isAdminUser } = useAdmin();
 
 
 const { currentUser, isAuthenticated, isLoading, fullName } =
@@ -219,10 +220,13 @@ const navigation = [
 ];
 
 const handleLogout = async () => {
-  await logout();
-  authStore.$reset();
-
-  mobileMenuOpen.value = false;
-  navigateTo("/login");
+  try {
+    await logout();
+  } catch (error) {
+    console.error('Logout error:', error);
+  } finally {
+    mobileMenuOpen.value = false;
+    navigateTo("/login");
+  }
 };
 </script>
