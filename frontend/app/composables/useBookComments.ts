@@ -1,52 +1,71 @@
+import { ref } from 'vue'
+import type { Book } from '~/schemas'
 import type { Comment } from '~/schemas/comment.schema'
 
 /**
  * Book comments composable for managing comments on a specific book.
- * Provides functionality to fetch, add, and delete comments.
- * 
- * @param {string} bookId - ID of the book to manage comments for
- * @returns {Object} Comments state and methods
- * @returns {Ref<Comment[]>} comments - Reactive comments array
- * @returns {Ref<boolean>} loading - Loading state for operations
- * @returns {Function} fetchComments - Fetches comments for the book
- * @returns {Function} addComment - Adds a new comment
- * @returns {Function} deleteComment - Deletes a comment
+ * Provides functionality to fetch, add, and delete comments with permission checks.
+ * * @param {string} bookId - ID of the book to manage comments for
  */
 export const useBookComments = (bookId: string) => {
-  const { getItems, createItems, deleteItems } = useDirectusItems()
+  const { getItems, createItems, deleteItems, getItemById } = useDirectusItems()
+
   /** Reactive comments array */
   const comments = ref<Comment[]>([])
-  /** Loading state */
+  
+  /** Loading state for initial fetch and operations */
   const loading = ref(false)
 
+  /** * Permission state: 
+   * true = comments allowed
+   * false = comments disabled
+   * null = haven't checked yet
+   */
+  const canComment = ref<boolean | null>(null)
+
   /**
-   * Fetches comments for the specified book.
-   * Sorts by date_created in descending order.
+   * Fetches comments for the specified book and checks if commenting is allowed.
+   * Runs both requests in parallel for better performance.
    */
   const fetchComments = async () => {
     loading.value = true
     try {
-      const response = await getItems<Comment[]>({
-        collection: 'comments',
-        params: {
-          filter: { book_id: { _eq: bookId } },
-          sort: ['-date_created'],
-          fields: [
-            'id',
-            'user_created.id',
-            'date_created',
-            'author_name',
-            'content',
-            'book_id'
-          ]
-        }
-      })
-      
-      if(!response) {
+      // Perform both API calls simultaneously
+      const [bookResponse, commentsResponse] = await Promise.all([
+        getItemById<Book>({
+          collection: 'books',
+          id: bookId,
+          params: {
+            fields: ['id', 'allow_comments']
+          }
+        }),
+        getItems<Comment[]>({
+          collection: 'comments',
+          params: {
+            filter: { book_id: { _eq: bookId } },
+            sort: ['-date_created'],
+            fields: [
+              'id',
+              'user_created.id',
+              'date_created',
+              'author_name',
+              'content',
+              'book_id'
+            ]
+          }
+        })
+      ])
+
+      // 1. Update permission state
+      canComment.value = bookResponse?.allow_comments ?? false
+
+      // 2. Update comments list
+      if (!commentsResponse) {
         comments.value = []
         return
       }
-      comments.value = response.map((item: any) => ({
+
+      comments.value = commentsResponse.map((item: any) => ({
         id: item.id,
         content: item.content,
         book_id: item.book_id,
@@ -55,32 +74,42 @@ export const useBookComments = (bookId: string) => {
         author_name: item.author_name || 'Anonymous'
       }))
     } catch (err) {
-      console.error(err)
+      console.error('Error fetching comments or book permissions:', err)
     } finally {
       loading.value = false
     }
   }
 
   /**
-   * Adds a new comment to the book.
-   * @param {string} content - Comment content
+   * Adds a new comment to the book if allowed.
+   * * @param {string} content - Comment content
    * @param {string} author_name - Author name
+   * @throws {Error} When comments are disabled for the book
    */
   const addComment = async (content: string, author_name: string) => {
+    // Frontend-only guard: prevent API call if we already know it's disabled
+    if (canComment.value === false) {
+      throw new Error('Comments are disabled for this book')
+    }
+
     try {
+      const commentData = {
+        content,
+        book_id: bookId,
+        author_name,
+        date_created: new Date().toISOString(),
+      }
+
       await createItems({
         collection: 'comments',
-        items: [
-          {
-            content,
-            book_id: bookId,
-            author_name: author_name
-          }
-        ]
+        items: [commentData]
       })
+
+      // Refresh data to show the new comment and re-verify status
       await fetchComments()
     } catch (err: any) {
-      console.error("Failed to add annotation:", err.message)
+      console.error("Failed to add comment:", err.message)
+      throw err
     }
   }
 
@@ -89,9 +118,23 @@ export const useBookComments = (bookId: string) => {
    * @param {string} id - Comment ID to delete
    */
   const deleteComment = async (id: string) => {
-    await deleteItems({ collection: 'comments', items: [id] })
-    comments.value = comments.value.filter((c: Comment) => c.id !== id)
+    try {
+      await deleteItems({ 
+        collection: 'comments', 
+        items: [id] 
+      })
+      comments.value = comments.value.filter((c: Comment) => c.id !== id)
+    } catch (err) {
+      console.error("Failed to delete comment:", err)
+    }
   }
 
-  return { comments, loading, fetchComments, addComment, deleteComment }
+  return { 
+    comments, 
+    loading, 
+    canComment, 
+    fetchComments, 
+    addComment, 
+    deleteComment 
+  }
 }
