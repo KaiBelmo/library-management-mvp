@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useFileUpload } from '~/composables/useFileUpload'
+import { useFileUploader } from '~/composables/useFileUploader'
 
 const props = defineProps<{
   label: string
@@ -18,7 +18,7 @@ const {
   errorMessage,
   pending,
   handleFileChange: handleUpload
-} = useFileUpload()
+} = useFileUploader()
 
 const handleFileChange = async (event: Event) => {
   const fileId = await handleUpload(event)

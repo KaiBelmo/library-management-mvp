@@ -13,7 +13,7 @@ import { ref } from 'vue'
  * @property {Function} handleFileChange - Handles file selection and upload
  * @property {Function} reset - Resets all state to initial values
  */
-export function useFileUpload() {
+export function useFileUploader() {
   const fileInput = ref<HTMLInputElement | null>(null)
   const fileName = ref<string | null>(null)
   const previewUrl = ref<string | null>(null)
