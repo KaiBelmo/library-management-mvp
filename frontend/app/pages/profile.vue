@@ -1,191 +1,167 @@
 <template>
-  <div
-    class="max-w-4xl mx-auto px-6 py-10 selection:bg-stone-900 selection:text-white"
-  >
+  <div class="max-w-4xl mx-auto px-6 py-10 selection:bg-stone-900 selection:text-white">
     <div class="space-y-16">
-      <header class="border-b-[1.5px] border-stone-900 pb-12">
-        <div class="flex flex-col md:flex-row justify-between items-end gap-8">
-          <div class="space-y-4">
-            <p
-              class="text-[10px] font-black uppercase tracking-[0.5em] text-stone-400"
-            >
-              Registry Personnel
-            </p>
-            <h1
-              class="font-serif text-5xl md:text-6xl text-stone-900 italic tracking-tighter leading-none"
-            >
-              Personnel Dossier
-            </h1>
-          </div>
-          <button
-            @click="handleLogout"
-            class="group flex items-center gap-2 px-6 py-3 border-[1.5px] border-stone-900 text-[10px] font-black uppercase tracking-widest text-stone-900 hover:bg-rose-600 hover:text-white transition-all"
-          >
-            Terminate Session <UIcon name="i-heroicons-power" class="w-3 h-3" />
-          </button>
-        </div>
-      </header>
+      <ProfileHeader @logout="handleLogout" :is-admin="isAdminUser" />
 
-      <div
-        v-show="authStore.status === 'authenticated'"
-        class="p-10 border-[1.5px] border-stone-900 bg-white shadow-[20px_20px_0px_0px_rgba(0,0,0,0.03)]"
-      >
-        <form @submit.prevent="handleUpdate" class="space-y-8">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="space-y-2">
-              <label
-                class="text-[10px] font-black uppercase tracking-widest text-stone-400"
-                >Given Name</label
-              >
-              <input
-                v-model="form.first_name"
-                type="text"
-                class="w-full bg-stone-50 border border-stone-200 p-3 outline-none text-black focus:border-stone-900 transition-all"
-              />
-            </div>
+      <template v-if="isAdminUser">
+        <AdminStats :stats="adminStats" />
+      </template>
+      
+      <ProfileUpdateForm v-show="isAuthenticated" :form="form" :pending="pending" :status-msg="statusMsg"
+        :is-error="isError" :expanded="profileFormExpanded" @update="handleUpdate"
+        @toggle-expanded="toggleProfileFormExpanded" />
 
-            <div class="space-y-2">
-              <label
-                class="text-[10px] font-black uppercase tracking-widest text-stone-400"
-                >Surname</label
-              >
-              <input
-                v-model="form.last_name"
-                type="text"
-                class="w-full bg-stone-50 border border-stone-200 p-3 outline-none text-black focus:border-stone-900 transition-all"
-              />
-            </div>
-          </div>
+      <template v-if="isAdminUser">
+        <AdminUserDirectory :users="allUsers" :expanded="adminDirectoryExpanded"
+          @toggle-expanded="toggleAdminDirectoryExpanded" />
+      </template>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-            <div class="space-y-2">
-              <label
-                class="text-[10px] font-black uppercase tracking-widest text-stone-400"
-                >Email Address</label
-              >
-              <input
-                v-model="form.email"
-                type="email"
-                class="w-full bg-stone-50 border border-stone-200 p-3 outline-none text-black focus:border-stone-900 transition-all"
-              />
-            </div>
-
-            <div class="space-y-2">
-              <label
-                class="text-[10px] font-black uppercase tracking-widest text-stone-400"
-                >New Password</label
-              >
-              <input
-                v-model="form.password"
-                type="password"
-                class="w-full bg-stone-50 border border-stone-200 p-3 outline-none text-black focus:border-stone-900 transition-all"
-              />
-            </div>
-          </div>
-
-          <div
-            class="flex flex-col md:flex-row justify-between items-center pt-6 gap-4"
-          >
-            <p
-              v-if="statusMsg"
-              :class="isError ? 'text-rose-600' : 'text-emerald-600'"
-              class="text-[10px] font-bold uppercase tracking-widest"
-            >
-              {{ statusMsg }}
-            </p>
-            <div v-else></div>
-
-            <button
-              type="submit"
-              :disabled="pending"
-              class="w-full md:w-auto px-10 py-4 bg-stone-900 text-stone-50 text-[10px] font-black uppercase tracking-[0.4em] disabled:bg-stone-300"
-            >
-              {{ pending ? "Updating..." : "Commit Changes" }}
-            </button>
-          </div>
-        </form>
-      </div>
+      <UserBooksSection v-if="isAuthenticated" :books="userBooks" :loading="userBooksLoading" :paginating="paginating"
+        :pagination="userBooksPagination" :expanded="expanded" @toggle-expanded="toggleUserBooksExpanded"
+        @navigate-book="navigateToBook" @set-page="setUserBooksPageHandler" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-import { useAuthStore } from "~/stores/auth";
-import { UpdateProfileSchema } from "~/utils/schemas";
+import { useAuthStore } from "~/stores/auth"
+import { UpdateProfileSchema } from "~/utils/schemas"
+import { useForm } from "~/composables/useForm"
+import ProfileHeader from "~/components/ui/profile/ProfileHeader.vue"
+import AdminStats from "~/components/ui/profile/AdminStats.vue"
+import AdminUserDirectory from "~/components/ui/profile/AdminUserDirectory.vue"
+import ProfileUpdateForm from "~/components/ui/profile/ProfileUpdateForm.vue"
+import UserBooksSection from "~/components/ui/profile/UserBooksSection.vue"
 
 definePageMeta({
   title: "Personnel Dossier",
-  middleware: [
-    function () {
-      const authStore = useAuthStore();
-      if (!authStore.isAuthenticated) return navigateTo("/login");
-    },
-  ],
-});
+  middleware: ['auth'],
+})
 
-const authStore = useAuthStore();
-const { user } = storeToRefs(authStore);
-const { updateUser } = useDirectusUsers();
-const { logout } = useDirectusAuth();
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
+const { logout } = useAuth()
+const userComposable = useUser()
+const adminComposable = useAdmin()
+const booksComposable = useBooks()
+const { pending, validate, runAction } = useForm(UpdateProfileSchema)
 
-const pending = ref(false);
-const statusMsg = ref("");
-const isError = ref(false);
+const {
+  isAuthenticated,
+  updateProfile,
+} = userComposable
+
+const {
+  allUsers,
+  adminStats,
+  isAdminUser,
+  loadRegistryData,
+} = adminComposable
+
+const {
+  userBooks,
+  userBooksLoading,
+  paginating,
+  userBooksPagination,
+  expanded,
+  loadUserBooks,
+  setUserBooksPage,
+  toggleUserBooksExpanded,
+} = booksComposable
+
+const statusMsg = ref("")
+const isError = ref(false)
+const profileFormExpanded = ref(true)
+const adminDirectoryExpanded = ref(true)
 
 const form = reactive({
   first_name: user.value?.first_name || "",
   last_name: user.value?.last_name || "",
   email: user.value?.email || "",
   password: "",
-});
+})
+
+const resetStatusMessages = () => {
+  statusMsg.value = ""
+  isError.value = false
+}
+
+const setSuccessMessage = (message: string) => {
+  statusMsg.value = message
+  isError.value = false
+}
+
+const setErrorMessage = (message: string) => {
+  statusMsg.value = message
+  isError.value = true
+}
+
+const resetPassword = () => {
+  form.password = ""
+}
+
+const toggleProfileFormExpanded = () => {
+  profileFormExpanded.value = !profileFormExpanded.value
+}
+
+const toggleAdminDirectoryExpanded = () => {
+  adminDirectoryExpanded.value = !adminDirectoryExpanded.value
+}
 
 const handleUpdate = async () => {
-  if (!user.value?.id) return;
+  if (!user.value?.id) return
 
-  const result = UpdateProfileSchema.safeParse({
-    first_name: form.first_name || undefined,
-    last_name: form.last_name || undefined,
-    email: form.email || undefined,
+  resetStatusMessages()
+
+  const profileData = {
+    first_name: form.first_name,
+    last_name: form.last_name,
+    email: form.email,
     password: form.password || undefined,
-  });
-  if (!result.success) {
-    const issue = result.error.issues[0];
-    statusMsg.value =
-      issue?.message ?? "Invalid input. Please check your data.";
-    isError.value = true;
-    return;
   }
-  try {
-    await updateUser({
-      id: user.value.id,
-      user: {
-        first_name: form.first_name,
-        last_name: form.last_name,
-        email: form.email,
-        ...(form.password ? { password: form.password } : {}),
-      },
-    });
 
-    if (authStore.user) {
-      authStore.user.first_name = form.first_name;
-      authStore.user.last_name = form.last_name;
-      authStore.user.email = form.email;
-    }
-    statusMsg.value = "DOSSIER UPDATED: REGISTRY SYNCHRONIZED.";
-    isError.value = false;
-    form.password = "";
-  } catch (error: any) {
-    statusMsg.value = "ERROR: UPDATE REJECTED BY CORE.";
-    isError.value = true;
-  } finally {
-    pending.value = false;
+  if (!validate(profileData)) {
+    setErrorMessage("INVALID DATA")
+    return
   }
-};
+
+  await runAction(async () => {
+    await updateProfile(user.value!.id, profileData)
+    setSuccessMessage("DOSSIER UPDATED.")
+    resetPassword()
+  })
+}
+
+const setUserBooksPageHandler = async (page: number) => {
+  if (!user.value?.id) return
+  await setUserBooksPage(page, user.value.id)
+}
+
+const navigateToBook = (id: string) => {
+  navigateTo(`/books/${id}`)
+}
 
 const handleLogout = async () => {
-  await logout();
-  authStore.$reset();
-  await navigateTo("/login");
-};
+  try {
+    await logout()
+  } catch (error) {
+    console.error('Logout error:', error)
+  } finally {
+    navigateTo("/login")
+  }
+}
+
+onMounted(async () => {
+  try {
+    const promises = [loadRegistryData()]
+
+    if (user.value?.id) {
+      promises.push(loadUserBooks(user.value.id))
+    }
+
+    await Promise.allSettled(promises)
+  } catch (error) {
+    console.error('Failed to load profile data:', error)
+  }
+})
 </script>
