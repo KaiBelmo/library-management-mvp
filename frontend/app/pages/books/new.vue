@@ -65,6 +65,26 @@
         accept="image/*"
       />
 
+      <div class="flex items-center justify-between py-2 border-b-[1.5px] border-stone-200">
+        <div>
+          <label class="block text-[10px] font-black uppercase tracking-[0.25em] text-black">Allow Comments</label>
+          <p class="text-[9px] text-stone-500 uppercase tracking-wider mt-1">
+            {{ form.allow_comments ? 'ENABLED' : 'DISABLED' }}
+          </p>
+        </div>
+        <button
+          type="button"
+          @click="form.allow_comments = !form.allow_comments"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-stone-900 focus:ring-offset-2"
+          :class="form.allow_comments ? 'bg-stone-900' : 'bg-stone-200'"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
+            :class="form.allow_comments ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
+
       <p
         v-if="errorMessage"
         class="text-[10px] font-black uppercase tracking-widest text-rose-600"
@@ -110,7 +130,8 @@ const form = reactive<CreateBookInput>({
   author: '',
   genre: '',
   publication_date: '',
-  cover_photo: ''
+  cover_photo: '',
+  allow_comments: true // Default to true for better UX
 })
 
 const handleSubmit = async () => {
