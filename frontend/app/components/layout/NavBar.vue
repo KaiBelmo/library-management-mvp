@@ -46,12 +46,8 @@
         </div>
 
         <div class="flex items-center gap-6">
-          <div v-if="isLoading" class="hidden sm:flex items-center gap-4">
-            <div class="w-16 h-8 bg-stone-200 animate-pulse rounded"></div>
-            <div class="w-20 h-8 bg-stone-900 animate-pulse rounded"></div>
-          </div>
           <div
-            v-else-if="isAuthenticated"
+            v-if="isAuthenticated"
             class="hidden sm:flex flex-col items-end border-r border-stone-200 pr-6"
           >
             <span
@@ -201,17 +197,16 @@
 <script setup>
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "~/stores/auth";
+import { onMounted, ref } from 'vue';
+import { useNuxtApp } from '#imports';
 import { useAdmin } from "~/composables/useAdmin";
 import { useAuth } from "~/composables/useAuth";
 
+const { $pinia } = useNuxtApp();
+const authStore = useAuthStore($pinia);
+const { isAuthenticated, user, fullName, isAdminUser } = storeToRefs(authStore);
+
 const mobileMenuOpen = ref(false);
-const authStore = useAuthStore();
-const { logout } = useAuth();
-const { isAdminUser } = useAdmin();
-
-
-const { currentUser, isAuthenticated, isLoading, fullName } =
-  storeToRefs(authStore);
 
 const navigation = [
   { label: "Collection", path: "/books" },
@@ -219,14 +214,15 @@ const navigation = [
   { label: "Profile", path: "/profile" },
 ];
 
+const { logout } = useAuth();
+
 const handleLogout = async () => {
   try {
     await logout();
-  } catch (error) {
-    console.error('Logout error:', error);
-  } finally {
     mobileMenuOpen.value = false;
     navigateTo("/login");
+  } catch (error) {
+    console.error('Logout error:', error);
   }
 };
 </script>
