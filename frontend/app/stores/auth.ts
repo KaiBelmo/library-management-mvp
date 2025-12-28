@@ -10,7 +10,10 @@ export const UserSchema = z.object({
   email: z.string().email(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
-  role: RoleSchema.nullable(),
+  role: z.union([
+    z.string(),          // role id only
+    RoleSchema,          // hydrated role object
+  ]).nullable(),
 })
 
 export type User = z.infer<typeof UserSchema>
@@ -26,13 +29,12 @@ export const useAuthStore = defineStore('auth', {
     isGuest: (state) => state.status === 'guest',
     isLoading: (state) => state.status === 'loading',
     isAdmin: (state) => {
-      if (!state.user || !state.user.role) return false
-      if (typeof state.user.role === 'string') {
-        // TODO: CHANGE THIS TO ENV VARIABLES 
-        const ADMIN_ROLE_ID = "d120852a-6da0-4169-85f1-44423f235272"
-        return state.user?.role=== ADMIN_ROLE_ID
+      const role = state.user?.role;
+      if (!role) return false;
+      if (typeof role === 'object' && 'name' in role) {
+        return role.name === 'Administrator';
       }
-      return false
+      return false;
     },
     fullName: (state) => {
       if (!state.user) return null
@@ -45,6 +47,11 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     setUser(user: User) {
+      if (typeof user.role === 'string') {
+        console.warn('REVERSION DETECTED: Role is a string!');
+        console.trace();
+      }
+
       this.user = user
       this.status = 'authenticated'
     },
@@ -65,14 +72,16 @@ export const useAuthStore = defineStore('auth', {
 
     async hydrateAuthState() {
       this.setLoading()
-      const { fetchUser } = useDirectusAuth()
-
+      const directus = useDirectus();
       try {
-        const user = await fetchUser()
-        if (user) {
-          const validatedUser = UserSchema.parse(user)
-          this.user = validatedUser
-          this.status = 'authenticated'
+        const fetchedUser: any = await directus('/users/me', {
+          params: {
+            fields: ['*', 'role.id', 'role.name'],
+          },
+        })
+        if (fetchedUser && fetchedUser.data) {
+          const validatedUser = UserSchema.parse(fetchedUser.data)
+          this.setUser(validatedUser)
         } else {
           this.setGuest()
         }
