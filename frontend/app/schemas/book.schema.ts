@@ -9,6 +9,7 @@ export const bookSchema = z.object({
   cover_photo: z.string().uuid(),
   user_created: z.string().uuid(),
   date_created: z.string().datetime(),
+  allow_comments: z.boolean().default(true)
 })
 
 export const createBookSchema = z.object({
@@ -17,6 +18,7 @@ export const createBookSchema = z.object({
   genre: z.string().min(1, 'Genre is required').max(50, 'Genre too long'),
   publication_date: z.string().min(1, 'Publication date is required'),
   cover_photo: z.string().uuid(),
+  allow_comments: z.boolean().default(true)
 })
 
 export const UpdateBookSchema = z.object({
@@ -24,6 +26,7 @@ export const UpdateBookSchema = z.object({
   author: z.string().min(1),
   genre: z.string().min(1),
   publication_date: z.string(), // YYYY-MM-DD or ISO
+  allow_comments: z.boolean().optional(),
 })
 
 export type UpdateBookInput = z.infer<typeof UpdateBookSchema>

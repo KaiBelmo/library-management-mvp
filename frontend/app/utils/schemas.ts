@@ -26,6 +26,7 @@ export const BookFormSchema = z.object({
       message: 'Invalid date',
     }),
   cover_photo: z.string().uuid().optional().or(z.literal('')),
+  allow_comments: z.boolean().default(true)
 })
 
 export type BookFormValues = z.infer<typeof BookFormSchema>
