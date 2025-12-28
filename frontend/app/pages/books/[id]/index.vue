@@ -123,7 +123,7 @@
               <CommentForm
                 v-if="isAuthenticated"
                 ref="commentFormRef"
-                :loading="commentLoading"
+                :loading="commentsLoading"
                 @submit="handleAddComment"
               />
               <div v-else class="bg-stone-50 border-[1.5px] border-stone-200 p-6 text-center">
@@ -131,7 +131,7 @@
               </div>
               <CommentsList
                 :comments="comments"
-                :loading="commentLoading"
+                :loading="commentsLoading"
                 :current-user="currentUser"
                 @delete="handleDeleteComment"
               />
