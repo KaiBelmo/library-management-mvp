@@ -38,6 +38,9 @@ export const useBookCrud = () => {
       const book = await getItemById<Book>({
         collection: 'books',
         id,
+        params: {
+          fields: ['*']
+        }
       })
 
       if (!book) {
@@ -66,9 +69,12 @@ export const useBookCrud = () => {
     try {
       console.log('Creating book with data:', data)
       
+      // Use the data directly as it already includes allow_comments with default
+      const bookData = { ...data }
+      
       const createdBooks = await createItems<Book>({
         collection: 'books',
-        items: [data],
+        items: [bookData],
       })
 
       console.log('Raw API response:', createdBooks)
@@ -114,12 +120,15 @@ export const useBookCrud = () => {
    */
   const update = async (id: string, data: UpdateBookInput): Promise<Book> => {
     loading.value = true
-    console.log(data);
+    console.log('Updating book with data:', data);
     try {
+      // Use the data directly since it already includes allow_comments
+      const updateData = { ...data }
+      
       const updatedBook = await updateItem<Book>({
         collection: 'books',
         id,
-        item: data,
+        item: updateData,
       })
 
       if (!updatedBook) {
