@@ -113,11 +113,11 @@
 
           <section class="space-y-10">
             <h2 class="text-[10px] font-black uppercase tracking-[0.4em] text-stone-900">Public Annotations</h2>
-            <div v-if="canComment === false" class="bg-stone-50 border-[1.5px] border-stone-200 p-6 text-center">
-              <p class="text-sm text-stone-600">Comments are disabled for this book.</p>
-            </div>
-            <div v-else-if="canComment === true" class="bg-stone-50 border-[1.5px] border-stone-200 p-6 text-center">
+            <div v-if="commentsLoading" class="bg-stone-50 border-[1.5px] border-stone-200 p-6 text-center">
               <p class="text-sm text-stone-600">Loading comments...</p>
+            </div>
+            <div v-else-if="canComment === false" class="bg-stone-50 border-[1.5px] border-stone-200 p-6 text-center">
+              <p class="text-sm text-stone-600">Comments are disabled for this book.</p>
             </div>
             <template v-else>
               <CommentForm
