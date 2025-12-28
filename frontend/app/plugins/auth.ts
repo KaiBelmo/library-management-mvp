@@ -3,8 +3,7 @@ export default defineNuxtPlugin(async () => {
 
   const user = useDirectusUser()
   if (user.value) {
-    authStore.user = UserSchema.parse(user.value)
-    authStore.status = 'authenticated'
+    authStore.hydrateAuthState()
   } else {
     authStore.setGuest()
   }

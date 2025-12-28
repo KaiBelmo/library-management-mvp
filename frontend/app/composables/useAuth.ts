@@ -53,7 +53,7 @@ export const useAuth = () => {
             last_name: data.last_name,
           }
         });
-        await authStore.hydrateAuthState()
+        // await authStore.hydrateAuthState()
       }
     } catch (error) {
       throw error
