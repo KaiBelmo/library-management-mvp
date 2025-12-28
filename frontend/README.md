@@ -1,75 +1,69 @@
-# Nuxt Minimal Starter
+# Library Management System - Frontend
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A modern web application for managing library resources, built with Nuxt.js 3, Vue 3, and TypeScript. This frontend application provides a user-friendly interface for browsing, searching, and managing books in a library system.
 
-## Setup
+> **Composable Functions**: For logic and usage details, see the [Composables Documentation](./app/composables/README.md).
 
-Make sure to install dependencies:
+## 🚀 Features
 
-```bash
-# npm
-npm install
+- **User Authentication**
+  - User registration and login
+  - Protected routes
+  - JWT-based authentication
 
-# pnpm
-pnpm install
+- **Book Management**
+  - Browse and search books
+  - Add new books
+  - Edit and delete existing books
+  - Book details with descriptions
 
-# yarn
-yarn install
+- **User Profile**
+  - View and update profile information
+  - Track borrowed books
+  - View reading history
 
-# bun
-bun install
+- **Admin Dashboard**
+  - User management
+  - Book inventory management
+  - System statistics
+
+## 🛠️ Tech Stack
+
+- **Frontend Framework**: Nuxt.js 3
+- **UI Components**: Nuxt UI
+- **State Management**: Pinia
+- **Form Handling**: Vee-Validate
+- **Type Checking**: TypeScript
+- **Styling**: Tailwind CSS
+- **API Client**: Directus SDK
+- **Form Validation**: Zod
+
+## 📁 Project Structure
+
+```
+frontend/
+├── app/
+│   ├── components/     # Reusable Vue components
+│   │   ├── auth/       # Authentication components
+│   │   ├── layout/     # Layout components
+│   │   └── ui/         # UI components
+│   │
+│   ├── composables/    # Composable functions
+│   │   ├── useAuth.ts  # Authentication logic
+│   │   ├── useBooks.ts # Book-related logic
+│   │   └── ...
+│   │
+│   ├── layouts/        # Layout templates
+│   ├── middleware/     # Route middleware
+│   ├── pages/          # Application pages
+│   ├── plugins/        # Nuxt plugins
+│   ├── schemas/        # Validation schemas
+│   ├── stores/         # Pinia stores
+│   └── utils/          # Utility functions
+│
+├── public/             # Static files
+├── .env.example        # Environment variables example
+├── nuxt.config.ts      # Nuxt configuration
+└── package.json        # Project dependencies
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
