@@ -122,6 +122,28 @@
             {{ errors.cover_photo }}
           </p>
         </div>
+
+        <div class="flex items-center justify-between py-4 border-t border-stone-200">
+          <div>
+            <div class="text-[10px] font-black uppercase tracking-[0.25em] text-stone-900 mb-1">
+              Allow Comments
+            </div>
+            <p class="text-[9px] text-stone-500 uppercase tracking-wider">
+              {{ form.allow_comments ? 'ENABLED' : 'DISABLED' }}
+            </p>
+          </div>
+          <button
+            type="button"
+            @click="form.allow_comments = !form.allow_comments"
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-stone-900 focus:ring-offset-2"
+            :class="form.allow_comments ? 'bg-stone-900' : 'bg-stone-200'"
+          >
+            <span
+              class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
+              :class="form.allow_comments ? 'translate-x-6' : 'translate-x-1'"
+            />
+          </button>
+        </div>
       </div>
 
       <div class="flex flex-col gap-4 pt-4">
@@ -176,6 +198,7 @@ const form = reactive<BookFormValues>({
   genre: '',
   publication_date: '',
   cover_photo: '',
+  allow_comments: true
 })
 
 const { errors, validate } = useForm(BookFormSchema)
@@ -192,6 +215,7 @@ watch(
       ? book.publication_date.substring(0, 10)
       : ''
     form.cover_photo = book.cover_photo ?? ''
+    form.allow_comments = book.allow_comments ?? true
   },
   { immediate: true }
 )
@@ -210,7 +234,8 @@ const onSubmit = () => {
     publication_date: new Date(
       form.publication_date
     ).toISOString(),
-    ...(form.cover_photo && { cover_photo: form.cover_photo })
+    ...(form.cover_photo && { cover_photo: form.cover_photo }),
+    allow_comments: form.allow_comments
   }
 
   emit('submit', payload)
