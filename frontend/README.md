@@ -29,13 +29,12 @@ A modern web application for managing library resources, built with Nuxt.js 3, V
 
 ## 🛠️ Tech Stack
 
-- **Frontend Framework**: Nuxt.js 3
+- **Frontend Framework**: Nuxt.js 4
 - **UI Components**: Nuxt UI
 - **State Management**: Pinia
-- **Form Handling**: Vee-Validate
 - **Type Checking**: TypeScript
-- **Styling**: Tailwind CSS
-- **API Client**: Directus SDK
+- **Styling**: Tailwind CSS 
+- **API Client**: Directus SDK / Module
 - **Form Validation**: Zod
 
 ## 📁 Project Structure
