@@ -1,12 +1,16 @@
 import { defineStore } from 'pinia'
 import { z } from 'zod'
 
+export const RoleSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+})
 export const UserSchema = z.object({
   id: z.string(),
-  email: z.string(),
+  email: z.string().email(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
-  role: z.string().nullable(),
+  role: RoleSchema.nullable(),
 })
 
 export type User = z.infer<typeof UserSchema>
