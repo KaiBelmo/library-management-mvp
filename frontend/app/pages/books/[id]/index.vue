@@ -113,18 +113,29 @@
 
           <section class="space-y-10">
             <h2 class="text-[10px] font-black uppercase tracking-[0.4em] text-stone-900">Public Annotations</h2>
-            <CommentForm
-              v-if="isAuthenticated"
-              ref="commentFormRef"
-              :loading="commentLoading"
-              @submit="handleAddComment"
-            />
-            <CommentsList
-              :comments="comments"
-              :loading="commentLoading"
-              :current-user="currentUser"
-              @delete="handleDeleteComment"
-            />
+            <div v-if="canComment === false" class="bg-stone-50 border-[1.5px] border-stone-200 p-6 text-center">
+              <p class="text-sm text-stone-600">Comments are disabled for this book.</p>
+            </div>
+            <div v-else-if="canComment === null" class="bg-stone-50 border-[1.5px] border-stone-200 p-6 text-center">
+              <p class="text-sm text-stone-600">Loading comments...</p>
+            </div>
+            <template v-else>
+              <CommentForm
+                v-if="isAuthenticated"
+                ref="commentFormRef"
+                :loading="commentLoading"
+                @submit="handleAddComment"
+              />
+              <div v-else class="bg-stone-50 border-[1.5px] border-stone-200 p-6 text-center">
+                <p class="text-sm text-stone-600">Please <NuxtLink to="/login" class="text-stone-900 font-medium hover:underline">sign in</NuxtLink> to leave a comment.</p>
+              </div>
+              <CommentsList
+                :comments="comments"
+                :loading="commentLoading"
+                :current-user="currentUser"
+                @delete="handleDeleteComment"
+              />
+            </template>
           </section>
         </div>
       </div>
@@ -165,12 +176,13 @@ const { isAuthenticated, fullName } = storeToRefs(auth);
 const { isAdminUser } = useAdmin();
 
 const { getById, remove, loading: bookLoading } = useBooks();
-const {
-  comments,
-  loading: commentLoading,
-  fetchComments,
-  addComment,
+const { 
+  comments, 
+  loading: commentsLoading, 
+  fetchComments, 
+  addComment, 
   deleteComment,
+  canComment 
 } = useBookComments(bookId);
 
 const book = ref<Book | null>(null);
