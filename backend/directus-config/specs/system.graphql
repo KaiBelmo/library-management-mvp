@@ -263,9 +263,9 @@ type Subscription {
   directus_webhooks_mutated(event: EventEnum): directus_webhooks_mutated
   directus_policies_mutated(event: EventEnum): directus_policies_mutated
   directus_access_mutated(event: EventEnum): directus_access_mutated
+  books_mutated(event: EventEnum): books_mutated
   directus_comments_mutated(event: EventEnum): directus_comments_mutated
   comments_mutated(event: EventEnum): comments_mutated
-  books_mutated(event: EventEnum): books_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -337,18 +337,19 @@ type auth_tokens {
 }
 
 type books {
-  id: ID!
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  author: String
   date_created: Date
   date_created_func: datetime_functions
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_updated: Date
   date_updated_func: datetime_functions
-  title: String
-  author: String
   genre: String
+  id: ID!
   publication_date: Date
   publication_date_func: datetime_functions
+  title: String
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  cover_photo(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
 }
 
 type books_mutated {
@@ -358,13 +359,13 @@ type books_mutated {
 }
 
 type comments {
-  id: ID!
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  author_name: String
+  book_id(filter: books_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): books
+  content: String
   date_created: Date
   date_created_func: datetime_functions
-  author_name: String
-  content: String
-  book_id(filter: books_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): books
+  id: ID!
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 }
 
 type comments_mutated {
@@ -1834,18 +1835,19 @@ input big_int_filter_operators {
 }
 
 input books_filter {
-  id: id_filter_operators
-  user_created: directus_users_filter
+  author: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: directus_users_filter
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  title: string_filter_operators
-  author: string_filter_operators
   genre: string_filter_operators
+  id: id_filter_operators
   publication_date: date_filter_operators
   publication_date_func: datetime_function_filter_operators
+  title: string_filter_operators
+  user_created: directus_users_filter
+  user_updated: directus_users_filter
+  cover_photo: directus_files_filter
   _and: [books_filter]
   _or: [books_filter]
 }

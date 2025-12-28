@@ -3,38 +3,38 @@ type Query {
   directus_sync_id_map_by_id(id: ID!, version: String): directus_sync_id_map
   directus_sync_id_map_aggregated(groupBy: [String], filter: directus_sync_id_map_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_sync_id_map_aggregated!]!
   directus_sync_id_map_by_version(version: String!, id: ID!): version_directus_sync_id_map
-  comments(filter: comments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [comments!]!
-  comments_by_id(id: ID!, version: String): comments
-  comments_aggregated(groupBy: [String], filter: comments_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [comments_aggregated!]!
-  comments_by_version(version: String!, id: ID!): version_comments
   books(filter: books_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [books!]!
   books_by_id(id: ID!, version: String): books
   books_aggregated(groupBy: [String], filter: books_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [books_aggregated!]!
   books_by_version(version: String!, id: ID!): version_books
+  comments(filter: comments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [comments!]!
+  comments_by_id(id: ID!, version: String): comments
+  comments_aggregated(groupBy: [String], filter: comments_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [comments_aggregated!]!
+  comments_by_version(version: String!, id: ID!): version_comments
 }
 
 type Mutation {
   create_directus_sync_id_map_items(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_sync_id_map_input!]): [directus_sync_id_map!]!
   create_directus_sync_id_map_item(data: create_directus_sync_id_map_input!): directus_sync_id_map
-  create_comments_items(filter: comments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_comments_input!]): [comments!]!
-  create_comments_item(data: create_comments_input!): comments
   create_books_items(filter: books_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_books_input!]): [books!]!
   create_books_item(data: create_books_input!): books
+  create_comments_items(filter: comments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_comments_input!]): [comments!]!
+  create_comments_item(data: create_comments_input!): comments
   update_directus_sync_id_map_items(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_sync_id_map_input!): [directus_sync_id_map!]!
   update_directus_sync_id_map_batch(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_sync_id_map_input!]): [directus_sync_id_map!]!
   update_directus_sync_id_map_item(id: ID!, data: update_directus_sync_id_map_input!): directus_sync_id_map
-  update_comments_items(filter: comments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_comments_input!): [comments!]!
-  update_comments_batch(filter: comments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_comments_input!]): [comments!]!
-  update_comments_item(id: ID!, data: update_comments_input!): comments
   update_books_items(filter: books_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_books_input!): [books!]!
   update_books_batch(filter: books_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_books_input!]): [books!]!
   update_books_item(id: ID!, data: update_books_input!): books
+  update_comments_items(filter: comments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_comments_input!): [comments!]!
+  update_comments_batch(filter: comments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_comments_input!]): [comments!]!
+  update_comments_item(id: ID!, data: update_comments_input!): comments
   delete_directus_sync_id_map_items(ids: [ID]!): delete_many
   delete_directus_sync_id_map_item(id: ID!): delete_one
-  delete_comments_items(ids: [ID]!): delete_many
-  delete_comments_item(id: ID!): delete_one
   delete_books_items(ids: [ID]!): delete_many
   delete_books_item(id: ID!): delete_one
+  delete_comments_items(ids: [ID]!): delete_many
+  delete_comments_item(id: ID!): delete_one
 }
 
 type Subscription {
@@ -59,9 +59,9 @@ type Subscription {
   directus_webhooks_mutated(event: EventEnum): directus_webhooks_mutated
   directus_policies_mutated(event: EventEnum): directus_policies_mutated
   directus_access_mutated(event: EventEnum): directus_access_mutated
+  books_mutated(event: EventEnum): books_mutated
   directus_comments_mutated(event: EventEnum): directus_comments_mutated
   comments_mutated(event: EventEnum): comments_mutated
-  books_mutated(event: EventEnum): books_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -111,18 +111,19 @@ enum EventEnum {
 }
 
 type books {
-  id: ID!
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  author: String
   date_created: Date
   date_created_func: datetime_functions
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_updated: Date
   date_updated_func: datetime_functions
-  title: String
-  author: String
   genre: String
+  id: ID!
   publication_date: Date
   publication_date_func: datetime_functions
+  title: String
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  cover_photo(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
 }
 
 type books_aggregated {
@@ -133,15 +134,16 @@ type books_aggregated {
 }
 
 type books_aggregated_count {
-  id: Int
-  user_created: Int
-  date_created: Int
-  user_updated: Int
-  date_updated: Int
-  title: Int
   author: Int
+  date_created: Int
+  date_updated: Int
   genre: Int
+  id: Int
   publication_date: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+  cover_photo: Int
 }
 
 type books_mutated {
@@ -151,13 +153,13 @@ type books_mutated {
 }
 
 type comments {
-  id: ID!
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  author_name: String
+  book_id(filter: books_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): books
+  content: String
   date_created: Date
   date_created_func: datetime_functions
-  author_name: String
-  content: String
-  book_id(filter: books_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): books
+  id: ID!
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 }
 
 type comments_aggregated {
@@ -168,12 +170,12 @@ type comments_aggregated {
 }
 
 type comments_aggregated_count {
+  author_name: Int
+  book_id: Int
+  content: Int
+  date_created: Int
   id: Int
   user_created: Int
-  date_created: Int
-  author_name: Int
-  content: Int
-  book_id: Int
 }
 
 type comments_mutated {
@@ -792,25 +794,26 @@ type directus_webhooks_mutated {
 
 """"""
 type version_books {
-  id: ID
-  user_created: JSON
-  date_created: Date
-  user_updated: JSON
-  date_updated: Date
-  title: String
   author: String
+  date_created: Date
+  date_updated: Date
   genre: String
+  id: ID
   publication_date: Date
+  title: String
+  user_created: JSON
+  user_updated: JSON
+  cover_photo: JSON
 }
 
 """"""
 type version_comments {
+  author_name: String
+  book_id: JSON
+  content: String
+  date_created: Date
   id: ID
   user_created: JSON
-  date_created: Date
-  author_name: String
-  content: String
-  book_id: JSON
 }
 
 """"""
@@ -838,18 +841,19 @@ input big_int_filter_operators {
 }
 
 input books_filter {
-  id: id_filter_operators
-  user_created: directus_users_filter
+  author: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: directus_users_filter
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  title: string_filter_operators
-  author: string_filter_operators
   genre: string_filter_operators
+  id: id_filter_operators
   publication_date: date_filter_operators
   publication_date_func: datetime_function_filter_operators
+  title: string_filter_operators
+  user_created: directus_users_filter
+  user_updated: directus_users_filter
+  cover_photo: directus_files_filter
   _and: [books_filter]
   _or: [books_filter]
 }
@@ -862,13 +866,13 @@ input boolean_filter_operators {
 }
 
 input comments_filter {
-  id: id_filter_operators
-  user_created: directus_users_filter
+  author_name: string_filter_operators
+  book_id: books_filter
+  content: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  author_name: string_filter_operators
-  content: string_filter_operators
-  book_id: books_filter
+  id: id_filter_operators
+  user_created: directus_users_filter
   _and: [comments_filter]
   _or: [comments_filter]
 }
@@ -878,24 +882,25 @@ input count_function_filter_operators {
 }
 
 input create_books_input {
-  id: ID
-  user_created: create_directus_users_input
-  date_created: Date
-  user_updated: create_directus_users_input
-  date_updated: Date
-  title: String
   author: String
+  date_created: Date
+  date_updated: Date
   genre: String
+  id: ID
   publication_date: Date
+  title: String
+  user_created: create_directus_users_input
+  user_updated: create_directus_users_input
+  cover_photo: create_directus_files_input
 }
 
 input create_comments_input {
+  author_name: String
+  book_id: create_books_input
+  content: String
+  date_created: Date
   id: ID
   user_created: create_directus_users_input
-  date_created: Date
-  author_name: String
-  content: String
-  book_id: create_books_input
 }
 
 input create_directus_access_input {
@@ -1553,24 +1558,25 @@ input string_filter_operators {
 }
 
 input update_books_input {
-  id: ID
-  user_created: update_directus_users_input
-  date_created: Date
-  user_updated: update_directus_users_input
-  date_updated: Date
-  title: String
   author: String
+  date_created: Date
+  date_updated: Date
   genre: String
+  id: ID
   publication_date: Date
+  title: String
+  user_created: update_directus_users_input
+  user_updated: update_directus_users_input
+  cover_photo: update_directus_files_input
 }
 
 input update_comments_input {
+  author_name: String
+  book_id: update_books_input
+  content: String
+  date_created: Date
   id: ID
   user_created: update_directus_users_input
-  date_created: Date
-  author_name: String
-  content: String
-  book_id: update_books_input
 }
 
 input update_directus_access_input {
