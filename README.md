@@ -8,7 +8,6 @@ A modern, full-stack library management application built with Nuxt.js 4, Direct
 - **Backend Documentation**: See [`backend/README.md`](backend/README.md)
 - **Composables Documentation**: See [`frontend/app/composables/README.md`](frontend/app/composables/README.md)
 - **Technical Notes**: See [`frontend/NOTES.md`](frontend/NOTES.md)
-- **API Documentation**: Available at `/docs` when backend is running
 
 ## Architecture Overview
 
