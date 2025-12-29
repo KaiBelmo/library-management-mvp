@@ -67,8 +67,6 @@ export const useBookCrud = () => {
   const create = async (data: CreateBookInput): Promise<Book> => {
     loading.value = true
     try {
-      console.log('Creating book with data:', data)
-      
       // Use the data directly as it already includes allow_comments with default
       const bookData = { ...data }
       
@@ -77,10 +75,7 @@ export const useBookCrud = () => {
         items: [bookData],
       })
 
-      console.log('Raw API response:', createdBooks)
-
       if (!createdBooks || !createdBooks[0]) {
-        console.error('No books returned from API:', createdBooks)
         throw new Error('Failed to create book - no books returned')
       }
 
@@ -89,7 +84,6 @@ export const useBookCrud = () => {
       }
 
       if (!response.data || !response.data[0]) {
-        console.error('No data in response:', response)
         throw new Error('Failed to create book - no data returned')
       }
 
@@ -97,7 +91,7 @@ export const useBookCrud = () => {
       return processedBooks[0]!
     } catch (error) {
       const err = error as ApiError
-      console.error('Failed to create book:', err)
+      console.error('Failed to create book:', err.message || 'Unknown error')
       console.error('Error details:', {
         message: err.message || 'No error message',
         data: err.data,
@@ -120,7 +114,6 @@ export const useBookCrud = () => {
    */
   const update = async (id: string, data: UpdateBookInput): Promise<Book> => {
     loading.value = true
-    console.log('Updating book with data:', data);
     try {
       // Use the data directly since it already includes allow_comments
       const updateData = { ...data }

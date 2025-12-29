@@ -56,14 +56,6 @@ export const useBookFilters = () => {
     const sortQuery = filters.sortOrder === 'desc'
       ? `-${filters.sortBy}`
       : filters.sortBy
-
-    console.log('DEBUG - Filter query built:', {
-      currentFilters: filters,
-      andConditions: and,
-      finalFilterQuery: filterQuery,
-      sortQuery
-    })
-
     return {
       filter: filterQuery,
       sort: sortQuery,

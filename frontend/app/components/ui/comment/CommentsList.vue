@@ -112,7 +112,6 @@ const props = withDefaults(defineProps<Props>(), {
 defineEmits<Emits>()
 
 const formatDate = (dateString?: string) => {
-console.log(dateString)
   if (!dateString) return 'UNKNOWN DATE'
 
   const date = new Date(dateString)

@@ -168,7 +168,6 @@ try {
     fetchBooks(),
     fetchGenres()
   ])
-  console.log(books.value)
 } catch (error) {
   console.error('Failed to load homepage data:', error)
 }

@@ -41,8 +41,6 @@ export const useUserBooks = () => {
 
     loading.value = true
     try {
-      console.log('Fetching books for user:', userId)
-      
       const userData = await getItems<Book>({
         collection: 'books',
         params: {
@@ -58,12 +56,10 @@ export const useUserBooks = () => {
       }
 
       if (!response?.data) {
-        console.log('No user books response data found')
         return []
       }
 
       const processedBooks = processBookImages(response.data)
-      console.log('Processed user books:', processedBooks)
       return processedBooks
     } catch (error) {
       console.error('Error fetching user books:', error)

@@ -131,7 +131,6 @@ onMounted(async () => {
       fetchGenres(),
       fetchBooks()
     ])
-    console.log(books.value)
   } catch (error) {
     console.error('Failed to load books page data:', error)
   }
