@@ -120,7 +120,7 @@
       </template>
 
       <template v-else>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-red-200">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div v-for="book in recentBooks" :key="book.id" class="w-full">
             <BookCard
               :book="book"
