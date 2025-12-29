@@ -2,180 +2,519 @@
 
 This directory contains Vue 3 composable functions that encapsulate and reuse stateful logic across components. These composables follow the Composition API pattern and are designed to be used with the `use` prefix.
 
-## Available Composables
+## Architecture & Design Patterns
 
-### `useAuth.ts`
-Manages authentication state, login/logout functionality, and user session.
+### Core Design Principles
+- **Single Responsibility**: Each composable focuses on one specific domain (auth, books, admin, etc.)
+- **Composition over Inheritance**: Composables are composed together to create complex functionality
+- **Reactive State Management**: Uses Vue 3's reactivity system for state management
+- **Type Safety**: Comprehensive TypeScript typing for better development experience
+- **Error Handling**: Consistent error handling patterns across all composables
+- **Separation of Concerns**: Clear separation between data fetching, state management, and UI logic
 
-#### Important Implementation Note
+### Key Patterns Used
 
-The `registerAndLogin` function implements a workaround for Directus API's default registration behavior. Here's why it's needed:
+#### 1. **Facade Pattern** (`useBooks.ts`)
+The main `useBooks` composable acts as a facade, combining multiple smaller composables:
+```typescript
+export const useBooks = () => {
+  const bookCrud = useBookCrud()
+  const bookFilters = useBookFilters()
+  const bookGenres = useBookGenres()
+  const userBooks = useUserBooks()
+  // Combines all functionality into a single interface
+}
+```
 
-1. **Directus Limitation**: The Directus register API only creates a user with email and password, without assigning a role or additional user details.
+#### 2. **Repository Pattern** (`useBookCrud.ts`)
+Encapsulates data access logic for CRUD operations:
+```typescript
+const getById = async (id: string): Promise<Book> => {
+  // Abstracts the direct API calls
+  const book = await getItemById<Book>({ collection: 'books', id })
+  return processBookImages([book])[0]!
+}
+```
 
-2. **The Workaround**:
-   ```typescript
-   const registerAndLogin = async (data: RegisterInput) => {
-     try {
-       // 1. Register the user with just email and password
-       await registerClient.request(registerUser(data.email, data.password));
-       
-       // 2. Log the user in immediately
-       await login({
-         email: data.email,
-         password: data.password,
-       });
-       
-       // 3. After successful login, update the user's profile with additional details
-       if (user.value && user.value.id) {
-         await updateUser({
-           id: user.value.id,
-           user: {
-             first_name: data.first_name,
-             last_name: data.last_name,
-           }
-         });
-         
-         // 4. Refresh the auth state to ensure all user data is up-to-date
-         await authStore.hydrateAuthState();
-       }
-     } catch (error) {
-       throw error;
-     }
-   }
-   ```
+#### 3. **Strategy Pattern** (`useBookFilters.ts`)
+Implements different filtering strategies that can be combined:
+```typescript
+const buildFilterQuery = () => {
+  const and = []
+  // Different filter strategies
+  if (filters.search) { /* search strategy */ }
+  if (filters.genre) { /* genre strategy */ }
+  if (filters.dateFrom) { /* date strategy */ }
+}
+```
 
-3. **Why This Approach?**
-   - Ensures user profiles have all necessary information (first name, last name)
-   - Maintains a consistent user experience by handling registration and profile setup in one flow
-   - Works around Directus's default behavior of not allowing additional fields during registration
-
-### `useAdmin.ts`
-
-Handles admin-specific functionality including user management and system statistics.
-
-#### Key Features:
-
-1. **Admin Statistics**: Tracks total books and users in the system
-2. **User Directory**: Provides access to all registered users
-3. **Admin-Only Operations**: Ensures admin privileges for sensitive operations
-
-
-### `useAuthForm.ts`
-Provides form handling and validation for authentication forms.
-
-#### Key Function: `runAction`
-
-This function is a robust error handling wrapper for authentication form submissions. It standardizes error handling and user feedback across all authentication flows.
-
+#### 4. **Template Method Pattern** (`useAuthForm.ts` & `useForm.ts`)
+Provides a template for form handling with customizable validation:
 ```typescript
 const runAction = async (action: () => Promise<void>) => {
-  // Reset messages and set pending state
-  errorMessage.value = ""
-  successMessage.value = ""
+  // Template: setup -> execute -> cleanup
   pending.value = true
-  
   try {
     await action()
     return true
-  } catch (error: any) {
-    // Detect network-related errors
-    const isNetworkError = 
-      error.name === 'TypeError' && (error.message.includes('fetch') || error.message.includes('Network')) ||
-      error.message && error.message.includes('Failed to fetch') ||
-      error.message && error.message.includes('NetworkError') ||
-      error.code === 'NETWORK_ERROR' ||
-      error.type === 'network'
-    
-    // Handle different types of errors with appropriate user feedback
-    if (isNetworkError) {
-      errorMessage.value = "ARCHIVE UNREACHABLE. PLEASE TRY AGAIN LATER."
-    } else if (error.data?.errors?.[0]?.message) {
-      // Handle API validation errors
-      errorMessage.value = error.data.errors[0].message
-    } else if (error.message) {
-      // Handle standard error objects with message
-      errorMessage.value = error.message
-    } else if (typeof error === 'string') {
-      // Handle string errors
-      errorMessage.value = error
-    } else {
-      // Fallback for unknown errors
-      errorMessage.value = "PROTOCOL ERROR. PLEASE TRY AGAIN."
-    }
-    return false
+  } catch (error) {
+    // Standardized error handling
   } finally {
-    // Always reset the pending state
     pending.value = false
   }
 }
 ```
 
+#### 5. **Observer Pattern** (Reactive State)
+All composables use Vue's reactivity to observe state changes:
+```typescript
+const books = ref<Book[]>([])
+const filters = reactive({ search: '', genre: '' })
+const isAdminUser = computed(() => authStore.isAdmin)
+```
+
+## Available Composables
+
+### Authentication Module
+
+#### `useAuth.ts`
+**Purpose**: Core authentication functionality including registration, login, and logout.
+
+**Key Design Decisions**:
+- **Workaround Pattern**: Implements a clever workaround for Directus API limitations
+- **Two-Step Registration**: Register user → Login → Update profile
+- **Client Management**: Uses separate REST client for registration operations
+
+**Important Implementation Details**:
+```typescript
+const registerAndLogin = async (data: RegisterInput) => {
+  // 1. Check for existing users
+  const existingUsers = await registerClient.request(readUsers({
+    filter: { email: { _eq: data.email } }
+  }))
+  
+  // 2. Register with basic credentials
+  await registerClient.request(registerUser(data.email, data.password))
+  
+  // 3. Login immediately
+  await login({ email: data.email, password: data.password })
+  
+  // 4. Update profile with additional data
+  if (user.value && user.value.id) {
+    await updateUser({
+      id: user.value.id,
+      user: { first_name: data.first_name, last_name: data.last_name }
+    })
+  }
+}
+```
+
+**Why This Approach?**
+- Directus registration API only accepts email/password
+- Profile updates require authentication first
+- Ensures data consistency and proper user session
+
+#### `useAuthForm.ts`
+**Purpose**: Specialized form handling for authentication with validation.
+
+**Design Pattern**: Template Method with network error detection
+```typescript
+const runAction = async (action: () => Promise<void>) => {
+  // Sophisticated error detection
+  const isNetworkError = 
+    error.name === 'TypeError' && (error.message.includes('fetch')) ||
+    error.message?.includes('Failed to fetch') ||
+    error.code === 'NETWORK_ERROR'
+  
+  if (isNetworkError) {
+    errorMessage.value = "ARCHIVE UNREACHABLE. PLEASE TRY AGAIN LATER."
+  }
+}
+```
+
 **Key Features**:
+- **Generic Type Support**: Works with both LoginCredentials and RegisterInput
+- **Zod Validation Integration**: Schema-based validation
+- **Network Error Detection**: Special handling for connectivity issues
+- **User-Friendly Messages**: Clear, actionable error messages
 
-1. **Consistent Error Handling**: Standardizes error handling across all authentication forms
-2. **Network Error Detection**: Specifically identifies network-related issues
-3. **User-Friendly Messages**: Provides clear, actionable feedback to users
-4. **Loading State Management**: Handles the `pending` state automatically
-5. **Type Safety**: Uses TypeScript for better error type handling
+#### `useUser.ts`
+**Purpose**: User profile management and authentication state.
 
+**Pattern**: State Management with computed properties
+```typescript
+const isAuthenticated = computed(() => authStore.status === 'authenticated')
 
-### `useBookComments.ts`
+const updateProfile = async (userId: string, profileData: any) => {
+  await updateUser({ id: userId, user: profileData })
+  // Optimistic update for current user
+  if (authStore.user?.id === userId) {
+    Object.assign(authStore.user, profileData)
+  }
+}
+```
 
-Manages book comment functionality including fetching, adding, and removing comments.
+### Admin Module
 
-#### Key Features:
+#### `useAdmin.ts`
+**Purpose**: Admin-specific functionality with privilege checking.
 
-1. **Comment Management**: Fetch, add, and delete comments
-2. **Real-time Updates**: Reactive comments array
-3. **User Attribution**: Tracks comment authors and timestamps
+**Design Pattern**: Role-Based Access Control
+```typescript
+const isAdminUser = computed(() => authStore.isAdmin)
 
+const loadRegistryData = async () => {
+  if (!isAdminUser.value) return // Guard clause
+  
+  // Admin-only operations
+  const users = await getUsers({ params: { fields: ['id', 'first_name', 'last_name', 'email'] } })
+}
+```
 
+**Key Features**:
+- **Privilege Checking**: Computed property for admin status
+- **Error Recovery**: Graceful fallback on API failures
+- **Statistics Aggregation**: Combines data from multiple sources
 
-### `useBookCrud.ts`
+### Books Module
 
-Provides comprehensive CRUD operations for books with image handling.
+#### `useBooks.ts` (Facade)
+**Purpose**: Main entry point combining all book functionality.
 
-#### Key Features:
+**Pattern**: Facade Pattern - hides complexity
+```typescript
+export const useBooks = () => {
+  const bookCrud = useBookCrud()
+  const bookFilters = useBookFilters()
+  const bookGenres = useBookGenres()
+  const userBooks = useUserBooks()
+  
+  // Unified interface
+  return {
+    books,
+    genres: bookGenres.genres,
+    filters: bookFilters.filters,
+    // Expose methods from all sub-composables
+    getById: bookCrud.getById,
+    create: bookCrud.create,
+    fetchGenres: bookGenres.fetchGenres,
+    fetchUserBooks: userBooks.fetchUserBooks,
+  }
+}
+```
 
-1. **Full CRUD Operations**: Create, read, update, and delete books
-2. **Image Handling**: Upload and process book cover images
-3. **Type Safety**: Strong TypeScript types for book data
-4. **Error Handling**: Consistent error handling for all operations
+**Benefits**:
+- **Simplified API**: Single import for all book functionality
+- **Consistent State**: Centralized state management
+- **Easy Composition**: Components get everything they need from one source
 
+#### `useBookCrud.ts` (Repository)
+**Purpose**: Low-level CRUD operations for books.
 
-### `useBookFilters.ts`
-Handles filtering and searching of books.
+**Pattern**: Repository Pattern with error handling
+```typescript
+const create = async (data: CreateBookInput): Promise<Book> => {
+  loading.value = true
+  try {
+    const createdBooks = await createItems<Book>({
+      collection: 'books',
+      items: [data],
+    })
+    return processBookImages([createdBooks[0]])[0]!
+  } catch (error) {
+    // Detailed error logging
+    console.error('Failed to create book:', err.message || 'Unknown error')
+    throw error
+  } finally {
+    loading.value = false
+  }
+}
+```
 
-### `useBookGenres.ts`
-Manages book genre-related functionality.
+**Key Features**:
+- **Consistent Loading States**: Unified loading management
+- **Error Recovery**: Detailed error logging and re-throwing
+- **Data Processing**: Automatic image URL processing
 
-### `useBookPagination.ts`
-Handles pagination logic for book listings.
+#### `useBookFilters.ts` (Strategy)
+**Purpose**: Dynamic filtering and sorting capabilities.
 
-### `useBooks.ts`
-Core book-related functionality and state management.
+**Pattern**: Strategy Pattern with query building
+```typescript
+const buildFilterQuery = () => {
+  const and = []
+  
+  // Different filter strategies
+  if (filters.search) {
+    and.push({
+      _or: [
+        { title: { _icontains: filters.search } },
+        { author: { _icontains: filters.search } }
+      ]
+    })
+  }
+  
+  return {
+    filter: and.length ? { _and: and } : {},
+    sort: filters.sortOrder === 'desc' ? `-${filters.sortBy}` : filters.sortBy
+  }
+}
+```
 
-### `useBookUtils.ts`
-Utility functions related to book operations.
+**Design Benefits**:
+- **Composable Filters**: Multiple filters can be combined
+- **API Agnostic**: Generates queries compatible with Directus
+- **Reactive Updates**: Changes automatically trigger new queries
 
-### `useFileUpload.ts`
-Handles file upload functionality, including preview and validation.
+#### `useBookGenres.ts` (Service)
+**Purpose**: Genre management and extraction.
 
-### `useForm.ts`
-Generic form handling and validation utilities.
+**Pattern**: Service Pattern with data transformation
+```typescript
+const extractGenresFromBooks = (books: any[]): string[] => {
+  const allGenres = books
+    .map(book => book.genre)
+    .filter(genre => genre && genre.trim() !== '')
+  
+  return [...new Set(allGenres)].sort() // Deduplication and sorting
+}
+```
 
-### `useUser.ts`
-Manages user-related data and operations.
+**Key Features**:
+- **Data Extraction**: Derives genres from existing books
+- **Deduplication**: Removes duplicate genres
+- **Caching**: Reactive storage for genre list
 
-### `useUserBooks.ts`
-Handles operations related to user's book collection.
+#### `useBookPagination.ts` (Utility)
+**Purpose**: Pagination utilities and state management.
+
+**Pattern**: Utility Functions with factory pattern
+```typescript
+export const createPaginationState = (defaultLimit: number = 10) => reactive({
+  page: 1,
+  limit: defaultLimit,
+  total: 0,
+  totalPages: 0,
+})
+
+export const calculatePagination = (totalItems: number, limit: number) => ({
+  total: totalItems,
+  totalPages: Math.ceil(totalItems / limit),
+})
+```
+
+**Benefits**:
+- **Reusable**: Can be used across different modules
+- **Consistent**: Standard pagination behavior
+- **Flexible**: Configurable limits and defaults
+
+#### `useBookComments.ts` (Domain Service)
+**Purpose**: Comment management with permission checking.
+
+**Pattern**: Domain-Driven Design with aggregate root
+```typescript
+export const useBookComments = (bookId: string) => {
+  // Aggregate root: manages comments for a specific book
+  const fetchComments = async () => {
+    // Parallel API calls for performance
+    const [bookResponse, commentsResponse] = await Promise.all([
+      getItemById<Book>({ id: bookId, fields: ['allow_comments'] }),
+      getItems<Comment[]>({ filter: { book_id: { _eq: bookId } } })
+    ])
+    
+    canComment.value = bookResponse?.allow_comments ?? false
+  }
+}
+```
+
+**Key Features**:
+- **Permission Checking**: Validates comment permissions
+- **Parallel Requests**: Optimized API calls
+- **Aggregate Pattern**: Manages all comments for one book
+
+#### `useUserBooks.ts` (Specialized Repository)
+**Purpose**: User-specific book management with pagination.
+
+**Pattern**: Specialized Repository with caching
+```typescript
+const fetchUserBooks = async (userId: string): Promise<Book[]> => {
+  // Fetches all books for internal processing
+  const userData = await getItems<Book>({
+    params: { filter: { user_created: { _eq: userId } } }
+  })
+  
+  return processBookImages(userData)
+}
+
+const loadUserBooks = async (userId: string) => {
+  const allBooks = await fetchUserBooks(userId)
+  // Apply pagination for display
+  userBooks.value = getPageItems(allBooks, userBooksPagination.page, limit)
+}
+```
+
+**Design Benefits**:
+- **Separation of Concerns**: Fetching vs. display logic
+- **Efficient Pagination**: Client-side pagination after fetch
+- **State Management**: Tracks expansion and loading states
+
+### Utils Module
+
+#### `useBookUtils.ts` (Helper)
+**Purpose**: Shared utility functions for book processing.
+
+**Pattern**: Helper Functions with pure functions
+```typescript
+const processBookImages = (books: Book[]) => {
+  return books.map((book) => {
+    const imageUrl = book.cover_photo
+      ? `${config.public.directusUrl}/assets/${book.cover_photo}`
+      : undefined
+    
+    return { ...book, image: imageUrl, cover_photo: book.cover_photo }
+  })
+}
+```
+
+**Benefits**:
+- **Pure Functions**: Predictable, testable functions
+- **Configuration Integration**: Uses runtime config
+- **Image Processing**: Centralized URL transformation
+
+#### `useFileUploader.ts` (Service)
+**Purpose**: File upload with preview and error handling.
+
+**Pattern**: Service Pattern with state management
+```typescript
+const handleFileChange = async (event: Event): Promise<string | null> => {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return null
+
+  // Create preview immediately for better UX
+  previewUrl.value = URL.createObjectURL(file)
+  
+  try {
+    const uploaded = await uploadFiles(file)
+    return Array.isArray(uploaded) ? uploaded[0]?.id : uploaded?.id
+  } catch (err) {
+    // Comprehensive error handling
+    errorMessage.value = err.data?.errors?.[0]?.message || 'Failed to upload file'
+    return null
+  }
+}
+```
+
+**Key Features**:
+- **Immediate Preview**: Better user experience
+- **Error Handling**: Multiple error source handling
+- **Memory Management**: Proper URL cleanup
+
+#### `useForm.ts` (Generic Template)
+**Purpose**: Generic form handling with validation.
+
+**Pattern**: Generic Template Method
+```typescript
+export function useForm<T = any>(schema: z.ZodSchema<T>) {
+  const validate = (data: T) => {
+    const result = schema.safeParse(data)
+    if (!result.success) {
+      const newErrors: Partial<Record<keyof T, string>> = {}
+      result.error.issues.forEach((issue) => {
+        const path = issue.path[0] as keyof T
+        newErrors[path] = issue.message
+      })
+      errors.value = newErrors
+      return false
+    }
+    return true
+  }
+}
+```
+
+**Benefits**:
+- **Generic Type Support**: Works with any form type
+- **Zod Integration**: Schema-based validation
+- **Reusable**: Can be used across the application
 
 ## Best Practices Followed
 
-- Keep composables focused on a single responsibility
-- Use TypeScript for better type safety
-- Handle errors appropriately
-- Document the composable's purpose, parameters, and return values
-- Consider using the `try/catch` pattern for async operations
-- Return reactive objects to maintain reactivity in components
+### Code Organization
+- **Single Responsibility**: Each composable has one clear purpose
+- **Dependency Injection**: Composables declare their dependencies
+- **Consistent Naming**: All composables use `use` prefix
+- **Logical Grouping**: Related composables are in subdirectories
+
+### Error Handling
+- **Consistent Patterns**: All async operations use try/catch
+- **User-Friendly Messages**: Clear error messages for users
+- **Logging**: Comprehensive error logging for debugging
+- **Graceful Degradation**: Fallback values and states
+
+### Performance
+- **Lazy Loading**: Composables are created when needed
+- **Parallel Requests**: Multiple API calls run in parallel
+- **Reactive Optimizations**: Computed properties for expensive operations
+- **Memory Management**: Proper cleanup and URL revocation
+
+### Type Safety
+- **Comprehensive Typing**: All functions and return values are typed
+- **Generic Types**: Flexible type parameters where needed
+- **Schema Validation**: Zod schemas for runtime validation
+- **Interface Contracts**: Clear interfaces for all composables
+
+### Testing Considerations
+- **Pure Functions**: Utility functions are easily testable
+- **Dependency Injection**: Easy to mock dependencies
+- **State Isolation**: Each composable manages its own state
+- **Error Scenarios**: Comprehensive error handling for testing
+
+## Usage Examples
+
+### Basic Usage
+```typescript
+// In a Vue component
+const { books, fetchBooks, loading } = useBooks()
+const { user, isAuthenticated } = useAuth()
+
+onMounted(() => {
+  if (isAuthenticated.value) {
+    fetchBooks()
+  }
+})
+```
+
+### Composition
+```typescript
+// Combining multiple composables
+const { create: createBook } = useBooks()
+const { validate, runAction } = useAuthForm(bookSchema)
+
+const handleSubmit = async () => {
+  if (!validate(bookData)) return
+  
+  await runAction(async () => {
+    await createBook(bookData)
+  })
+}
+```
+
+### Advanced Usage
+```typescript
+// Custom composable that uses others
+export function useBookManagement() {
+  const books = useBooks()
+  const auth = useAuth()
+  const admin = useAdmin()
+  
+  const canEditBook = (book: Book) => {
+    return auth.user.value?.id === book.user_created || admin.isAdminUser.value
+  }
+  
+  return {
+    ...books,
+    canEditBook,
+  }
+}
+```
+
+This architecture provides a solid foundation for the library management system, with clear separation of concerns, excellent reusability, and comprehensive error handling.

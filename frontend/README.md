@@ -8,87 +8,27 @@ A modern, mobile-responsive web application for managing library resources, buil
 ## Functional Requirements
 
 ### Book Management
+For detailed implementation information, see the [Composables Documentation](./app/composables/README.md#books-module).
 
-#### 1. Creating a New Book
-- **Implementation**: `app/composables/books/useBookCrud.ts`
-- **Components**: `app/components/ui/form/BookForm.vue`
-- **How it works**:
-  - Uses `createBook` function from `useBookCrud` composable
-  - Handles form submission with validation
-  - Supports file uploads for book covers
-  - Updates the book list in real-time after creation
-
-#### 2. Getting Book Information
-- **Implementation**: `app/composables/books/useBookCrud.ts`
-- **Components**: `app/components/ui/book/BookCard.vue`
-- **How it works**:
-  - `getBookById` function retrieves book details
-  - Displays book information in a card format
-  - Handles loading and error states
-
-#### 3. Updating Book Information
-- **Implementation**: `app/composables/books/useBookCrud.ts`
-- **Components**: `app/components/ui/form/BookForm.vue`
-- **How it works**:
-  - Pre-fills form with existing book data
-  - Uses the same form component as creation
-  - Updates book details in the database and UI
-
-#### 4. Deleting a Book
-- **Implementation**: `app/composables/books/useBookCrud.ts`
-- **Components**: `app/components/ui/book/BookCard.vue`
-- **How it works**:
-  - Confirms deletion with a dialog
-  - Removes book from the database
-  - Updates the UI to reflect changes
+- **Creating Books**: Add new books with cover images and metadata
+- **Book Information**: View detailed book information and descriptions  
+- **Updating Books**: Edit existing book details and metadata
+- **Deleting Books**: Remove books with confirmation dialogs
 
 ### Search and Filtering
+For detailed implementation information, see the [Composables Documentation](./app/composables/README.md#books-module).
 
-#### 1. Book Search
-- **Implementation**: `app/composables/books/useBookFilters.ts`
-- **Features**:
-  - Debounced search by title, author, and genre
-  - Real-time results as you type
-  - Case-insensitive matching
-
-#### 2. Publication Date Filtering
-- **Implementation**: `app/composables/books/useBookFilters.ts`
-- **Features**:
-  - Filter by date ranges
-  - Sort by newest/oldest
-  - Combines with other filters
+- **Book Search**: Real-time search by title, author, and genre
+- **Date Filtering**: Filter books by publication date ranges
+- **Sorting**: Sort by title, publication date, or creation date
 
 ### Comments on Books
+For detailed implementation information, see the [Composables Documentation](./app/composables/README.md#books-module).
 
-#### Comment Toggle
-- **Implementation**: `app/components/ui/book/BookComments.vue`
-- **Features**:
-  - Toggle comments on/off per book
-  - State persisted in database
-
-#### Comment Management
-
-#### 1. Adding Comments
-- **Implementation**: `app/composables/books/useBookComments.ts`
-- **Components**: `app/components/ui/book/BookComments.vue`
-- **Features**:
-  - Form validation
-  - Real-time updates
-  - User attribution
-
-#### 2. Viewing Comments
-- **Implementation**: `app/composables/books/useBookComments.ts`
-- **Features**:
-  - Paginated comments
-  - User avatars and timestamps
-  - Nested replies support
-
-#### 3. Deleting Comments
-- **Implementation**: `app/composables/books/useBookComments.ts`
-- **Security**:
-  - Only comment author or admin can delete
-  - Server-side validation
-  - Confirmation dialog
+- **Comment Toggle**: Enable/disable comments per book
+- **Adding Comments**: Form validation and real-time updates
+- **Viewing Comments**: Paginated display with user attribution
+- **Deleting Comments**: Author/admin permissions with confirmation
 
 ## Features
 
@@ -144,7 +84,7 @@ A modern, mobile-responsive web application for managing library resources, buil
 
 ## End-to-End Testing
 
-This project uses Playwright for end-to-end testing, ensuring critical user flows work as expected.
+This project uses Playwright for end-to-end testing. For detailed testing information and architecture, see the [Composables Documentation](./app/composables/README.md#testing-considerations).
 
 ### Running Tests
 

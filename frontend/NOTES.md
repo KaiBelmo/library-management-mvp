@@ -38,11 +38,7 @@
 
 ### User Authentication
 - **File**: `app/composables/auth/useAuth.ts`
-- **Key Points**:
-  - Uses `@directus/sdk` for authentication
-  - Handles both registration and login flows
-  - Automatically updates user profile after registration
-  - Integrates with Pinia store for state management
+- **Details**: See comprehensive documentation in [Composables README](./app/composables/README.md#authentication-module)
 
 ### Role-Based Access Control (RBAC)
 - **File**: `app/stores/auth.ts`
@@ -50,14 +46,6 @@
   - Uses Directus roles for authorization
   - Fetches user with role details using: `fields: ['*', 'role.id', 'role.name']`
   - Role check example: `user.role.name === 'admin'`
-
-
-### API Client
-- **File**: `app/composables/auth/useAuth.ts`
-- **Key Points**:
-  - Creates separate clients for public/authenticated requests
-  - Handles token refresh automatically
-  - Implements error handling for API requests
 
 ## State Management
 
@@ -72,10 +60,7 @@
 
 ### Form Handling
 - **File**: `app/composables/utils/useForm.ts`
-- **Key Points**:
-  - Reusable form handling logic
-  - Integration with Zod for validation
-  - Error handling and submission state
+- **Details**: See comprehensive documentation in [Composables README](./app/composables/README.md#utils-module)
 
 ## Testing
 
@@ -90,17 +75,11 @@
 
 ### Data Loading
 - **File**: `app/composables/books/useBooks.ts`
-- **Key Points**:
-  - Implements pagination
-  - Caches API responses
-  - Handles loading states
+- **Details**: See comprehensive documentation in [Composables README](./app/composables/README.md#books-module)
 
 ### Image Handling
 - **File**: `app/composables/utils/useFileUploader.ts`
-- **Key Points**:
-  - Handles file uploads to Directus
-  - Validates file types and sizes
-  - Shows upload progress
+- **Details**: See comprehensive documentation in [Composables README](./app/composables/README.md#utils-module)
 
 ## Security
 
