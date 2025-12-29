@@ -26,7 +26,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/auth"
 import { UpdateProfileSchema } from "~/utils/schemas"
-import { useForm } from "~/composables/useForm"
 import ProfileHeader from "~/components/ui/profile/ProfileHeader.vue"
 import AdminStats from "~/components/ui/profile/AdminStats.vue"
 import AdminUserDirectory from "~/components/ui/profile/AdminUserDirectory.vue"

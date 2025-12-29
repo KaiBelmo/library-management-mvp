@@ -112,9 +112,7 @@
 
 <script setup lang="ts">
 import type { CreateBookInput } from '~/schemas'
-import { useBooks } from '~/composables/useBooks'
 import { BookFormSchema } from '~/utils/schemas'
-import { useForm } from '~/composables/useForm'
 import FileUpload from '~/components/ui/form/FileUpload.vue'
 
 definePageMeta({

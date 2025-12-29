@@ -137,7 +137,6 @@
 
 <script setup lang="ts">
 import type { Book } from '~/schemas'
-import { getPageItems } from '~/composables/useBookPagination'
 import BookCard from '~/components/ui/book/BookCard.vue'
 import BookCardSkeleton from '~/components/ui/book/BookCardSkeleton.vue'
 import StatCard from '~/components/ui/feedback/StatCard.vue'

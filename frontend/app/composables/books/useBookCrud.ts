@@ -1,6 +1,5 @@
 import type { Book, UpdateBookInput, CreateBookInput } from '~/schemas'
 import type { DirectusResponse } from '~/types'
-import { useBookUtils } from './useBookUtils'
 import { uploadFiles } from '@directus/sdk'
 
 interface ApiError extends Error {

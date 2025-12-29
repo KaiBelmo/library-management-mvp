@@ -1,6 +1,5 @@
 import type { Book } from '~/schemas'
 import type { DirectusResponse } from '~/types'
-import { calculatePagination, getPageItems, createPaginationState, resetPagination } from './useBookPagination'
 
 /**
  * User books composable for managing user-specific book collections.

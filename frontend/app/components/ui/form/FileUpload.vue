@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useFileUploader } from '~/composables/useFileUploader'
 
 const props = defineProps<{
   label: string

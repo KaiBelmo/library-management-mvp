@@ -52,7 +52,6 @@
 <script setup lang="ts">
 import type { UpdateBookInput, Book } from '~/schemas'
 import BookForm from '~/components/ui/form/BookForm.vue'
-import { useBooks } from '~/composables/useBooks'
 
 definePageMeta({
   layout: 'default',

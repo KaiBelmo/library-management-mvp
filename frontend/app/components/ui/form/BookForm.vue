@@ -175,7 +175,6 @@
 <script setup lang="ts">
 import type { Book, CreateBookInput, UpdateBookInput } from '~/schemas'
 import { BookFormSchema } from '~/utils/schemas'
-import { useForm } from '~/composables/useForm'
 import FileUpload from './FileUpload.vue'
 
 interface Props {

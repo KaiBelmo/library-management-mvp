@@ -1,9 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+  compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  css: ['./app/assets/css/main.css'],
+  css: ["./app/assets/css/main.css"],
 
+  imports: {
+    dirs: [
+      "composables",
+      "composables/*/index.{ts,js,mjs,mts}",
+      "composables/**",
+    ],
+  },
   directus: {
     url: process.env.DIRECTUS_URL,
     autoFetch: true,
@@ -13,15 +20,15 @@ export default defineNuxtConfig({
     public: {
       directusUrl: process.env.DIRECTUS_URL,
       corsEnabled: process.env.CORS_ENABLED,
-      corsOrigin: process.env.CORS_ORIGIN
-    }
+      corsOrigin: process.env.CORS_ORIGIN,
+    },
   },
 
   modules: [
-    '@nuxt/eslint',
-    'nuxt-directus',
-    '@pinia/nuxt',
-    '@vueuse/nuxt',
-    '@nuxt/ui'
+    "@nuxt/eslint",
+    "nuxt-directus",
+    "@pinia/nuxt",
+    "@vueuse/nuxt",
+    "@nuxt/ui",
   ],
-})
+});

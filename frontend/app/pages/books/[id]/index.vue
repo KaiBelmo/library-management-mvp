@@ -70,18 +70,18 @@
             (isAuthenticated && book.user_created === auth.user?.id) ||
             isAdminUser
           "
-          class="flex flex-col sm:flex-row gap-3 w-full md:w-auto"
+          class="flex flex-col sm:flex-row gap-3 w-full md:w-1/3"
         >
-          <NuxtLink :to="`/books/${book.id}/edit`" class="w-full sm:w-auto">
+          <NuxtLink :to="`/books/${book.id}/edit`" class="w-full">
             <button
-              class="w-full px-6 py-4 md:py-3 text-black border-[1.5px] border-stone-900 text-[10px] font-black uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-all active:scale-95"
+              class="w-full px-2 py-2 text-black border-[1.5px] border-stone-900 text-[10px] font-black uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-all active:scale-95"
             >
               Modify Record
             </button>
           </NuxtLink>
           <button
             @click="confirmDelete"
-            class="w-full sm:w-auto px-6 py-4 md:py-3 border-[1.5px] border-stone-900 text-[10px] font-black uppercase tracking-widest text-rose-600 hover:bg-rose-600 hover:text-white transition-all active:scale-95"
+            class="w-full px-2 py-2 border-[1.5px] border-stone-900 text-[10px] font-black uppercase tracking-widest text-rose-600 hover:bg-rose-600 hover:text-white transition-all active:scale-95"
           >
             Purge Entry
           </button>
@@ -247,9 +247,6 @@
 import CommentForm from "~/components/ui/comment/CommentForm.vue";
 import CommentsList from "~/components/ui/comment/CommentsList.vue";
 import ConfirmDialog from "~/components/ui/form/ConfirmDialog.vue";
-import { useBookComments } from "~/composables/useBookComments";
-import { useBooks } from "~/composables/useBooks";
-import { useAdmin } from "~/composables/useAdmin";
 import type { Book } from "~/schemas";
 import { useAuthStore } from "~/stores/auth";
 

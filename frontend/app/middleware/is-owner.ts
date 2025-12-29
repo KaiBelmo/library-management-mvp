@@ -1,5 +1,3 @@
-import { useBooks } from '~/composables/useBooks'
-import { useAdmin } from '~/composables/useAdmin'
 import { useAuthStore } from '~/stores/auth'
 
 /**

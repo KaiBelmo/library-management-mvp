@@ -161,7 +161,6 @@ import { storeToRefs } from "pinia";
 import { useAuthStore } from "~/stores/auth";
 import { onMounted, ref } from 'vue';
 import { useNuxtApp } from '#imports';
-import { useAuth } from "~/composables/useAuth";
 
 const { $pinia } = useNuxtApp();
 const authStore = useAuthStore($pinia);

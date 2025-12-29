@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 
 /**
  * A composable that handles file uploads with preview and error handling.
