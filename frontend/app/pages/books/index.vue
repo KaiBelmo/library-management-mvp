@@ -55,13 +55,13 @@
         </div>
 
         <div v-if="pagination.totalPages > 1" class="flex flex-col sm:flex-row items-center justify-between gap-6 px-6 py-6 border border-stone-900 bg-white">
-          <button @click="setPage(pagination.page - 1)" :disabled="pagination.page === 1" class="text-[10px] font-black uppercase tracking-widest">Previous</button>
+          <button @click="setPage(pagination.page - 1)" :disabled="pagination.page === 1" class="text-[10px] text-black uppercase tracking-widest">Previous</button>
           
           <div class="text-center">
              <p class="text-[10px] font-mono text-stone-500">VOL_{{ pagination.page }} / {{ pagination.totalPages }}</p>
           </div>
 
-          <button @click="setPage(pagination.page + 1)" :disabled="pagination.page === pagination.totalPages" class="text-[10px] font-black uppercase tracking-widest">Next</button>
+          <button @click="setPage(pagination.page + 1)" :disabled="pagination.page === pagination.totalPages" class="text-[10px] text-black uppercase tracking-widest">Next</button>
         </div>
       </div>
     </div>
