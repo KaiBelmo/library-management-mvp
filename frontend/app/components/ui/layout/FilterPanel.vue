@@ -144,7 +144,14 @@ const orderOptions = [
 
 const hasActiveFilters = computed(() => {
   if (!props.filters) return false;
-  return !!(props.filters.search || props.filters.genre || props.filters.dateFrom || props.filters.dateTo);
+  return (
+    (props.filters.search && props.filters.search.length > 0) ||
+    (props.filters.genre && props.filters.genre.length > 0) ||
+    (props.filters.dateFrom && props.filters.dateFrom.length > 0) ||
+    (props.filters.dateTo && props.filters.dateTo.length > 0) ||
+    (props.filters.sortBy && props.filters.sortBy !== 'title') ||
+    (props.filters.sortOrder && props.filters.sortOrder !== 'asc')
+  );
 });
 
 function selectGenre(val: string) {
