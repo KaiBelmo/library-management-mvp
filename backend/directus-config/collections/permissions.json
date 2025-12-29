@@ -114,7 +114,8 @@
       "id",
       "user_created",
       "date_created",
-      "cover_photo"
+      "cover_photo",
+      "allow_comments"
     ],
     "policy": "9eb3cd16-8ca2-47bb-8f2c-98540aad96bf",
     "_syncId": "e144e97d-f4e5-4623-950e-0dbfff2bb805"
@@ -589,6 +590,7 @@
       "email",
       "password"
     ],
-    "policy": "9eb3cd16-8ca2-47bb-8f2c-98540aad96bf"
+    "policy": "9eb3cd16-8ca2-47bb-8f2c-98540aad96bf",
+    "_syncId": "4721bfbe-b271-484c-8d59-5c4dcddfd9ae"
   }
 ]
