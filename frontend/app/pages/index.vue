@@ -73,10 +73,10 @@
 
     <section>
       <div
-        class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-b border-stone-100 pb-8"
+        class="flex flex-col items-center text-center md:text-left md:flex-row md:justify-between md:items-end mb-12 gap-6 border-b border-stone-100 pb-8"
       >
-        <div>
-          <h2 class="font-serif text-4xl text-stone-900 italic tracking-tight">
+        <div class="w-full md:w-auto">
+          <h2 class="font-serif text-3xl sm:text-4xl text-stone-900 italic tracking-tight">
             Recent Acquisitions
           </h2>
           <p
@@ -95,8 +95,9 @@
       </div>
 
       <template v-if="loading">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <BookCardSkeleton v-for="i in 3" :key="i" />
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+          <BookCardSkeleton v-for="i in 2" :key="i" class="sm:hidden" />
+          <BookCardSkeleton v-for="i in 3" :key="i" class="hidden sm:block" />
         </div>
       </template>
 
@@ -120,8 +121,8 @@
       </template>
 
       <template v-else>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="book in recentBooks" :key="book.id" class="w-full">
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          <div v-for="book in recentBooks" :key="book.id" class="w-full transform transition-transform hover:scale-[1.02]">
             <BookCard
               :book="book"
               class="h-full"
@@ -156,7 +157,7 @@ const {
 } = useBooks()
 
 pagination.page = 1
-pagination.limit = 3
+pagination.limit = 4
 
 filters.sortBy = 'date_created'
 filters.sortOrder = 'desc'
@@ -171,7 +172,7 @@ try {
 }
 
 const recentBooks = computed<Book[]>(() =>
-  getPageItems(books.value, 1, 3)
+  getPageItems(books.value, 1, 4)
 )
 
 const stats = computed(() => ({
