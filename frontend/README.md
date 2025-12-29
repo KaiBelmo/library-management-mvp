@@ -2,9 +2,9 @@
 
 A modern, mobile-responsive web application for managing library resources, built with Nuxt.js 4, Nuxt UI, Directus, and TypeScript. This frontend application provides a user-friendly interface for browsing, searching, and managing books across all device sizes with optimized image loading for better performance.
 
-> **Composable Functions**: For logic and usage details, see the [Composables Documentation](./app/composables/README.md).
+> **Composable Functions**: For logic and usage details, see the [Composables Documentation](./docs/COMPOSABLES-README.md).
 
-> **Technical Documentation**: For implementation details and architecture (some) decisions, see [NOTES.md](./NOTES.md).
+> **Technical Documentation**: For implementation details and architecture (some) decisions, see [NOTES.md](./docs/NOTES.md).
 ## Functional Requirements
 
 ### Book Management
