@@ -71,27 +71,40 @@ The `docker-compose.yml` file defines and manages three main services:
 | Field | Type | Notes |
 |-----|-----|-----|
 | id | UUID | Primary key |
-| title | varchar | Book title |
-| author | varchar | Author name |
-| genre | varchar | Book genre |
+| title | varchar(200) | Book title (max 200 chars) |
+| author | varchar(100) | Author name (max 100 chars) |
+| genre | varchar(50) | Book genre (max 50 chars) |
 | publication_date | timestamp | Publication date |
-| user_created | UUID | Created by Directus |
-| user_updated | UUID | Updated by Directus |
+| cover_photo | UUID | Foreign key to Directus files|
+| allow_comments | boolean | Enable/disable comments |
+| user_created | UUID | Auto-managed by by Directus |
+| user_updated | UUID | Auto-managed by by Directus |
 | date_created | timestamptz | Auto-managed by Directus |
 | date_updated | timestamptz | Auto-managed by Directus |
 
 A book can have **many comments**.
-
 
 ### Comments
 
 | Field | Type | Notes |
 |-----|-----|-----|
 | id | UUID | Primary key |
-| content | varchar | Comment text |
+| content | text | Comment text |
 | author_name | varchar | Display name |
 | book_id | UUID | FK → books (cascade delete) |
 | user_created | UUID | Created by Directus |
+| date_created | timestamptz | Auto-managed by Directus |
+
+### Users
+
+| Field | Type | Notes |
+|-----|-----|-----|
+| id | UUID | Primary key |
+| first_name | varchar | User first name |
+| last_name | varchar | User last name |
+| email | varchar | Unique email address |
+| password | varchar | Hashed password |
+| role | varchar | User role (admin/user) |
 | date_created | timestamptz | Auto-managed by Directus |
 
 
@@ -175,4 +188,6 @@ A .env.example file is provided as a reference.
 
 For detailed information about running tests, please refer to the [Testing Guide](./testing/README.md).
 
+## Database Seeding
 
+For populating the database with test data, please refer to [Seed Documentation](./seed/README.md).
