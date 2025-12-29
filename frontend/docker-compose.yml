@@ -1,0 +1,13 @@
+services:
+  library-frontend:
+    build: .
+    container_name: library_frontend_prod
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - CORS_ENABLED=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always

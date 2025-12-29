@@ -12,7 +12,7 @@ export default defineNuxtConfig({
     ],
   },
   directus: {
-    url: process.env.DIRECTUS_URL,
+    url: process.env.DIRECTUS_URL || "http://localhost:8055",
     autoFetch: true,
   },
 
