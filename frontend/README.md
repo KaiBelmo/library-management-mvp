@@ -1,6 +1,6 @@
 # Library Management System - Frontend
 
-A modern web application for managing library resources, built with Nuxt.js 4, Nuxt ui, Directus and TypeScript. This frontend application provides a user-friendly interface for browsing, searching, and managing books in a library web app.
+A modern, mobile-responsive web application for managing library resources, built with Nuxt.js 4, Nuxt UI, Directus, and TypeScript. This frontend application provides a user-friendly interface for browsing, searching, and managing books across all device sizes with optimized image loading for better performance.
 
 > **Composable Functions**: For logic and usage details, see the [Composables Documentation](./app/composables/README.md).
 
@@ -121,6 +121,61 @@ A modern web application for managing library resources, built with Nuxt.js 4, N
 - **API Client**: Directus SDK
 - **Form Validation**: Zod
 - **Utilities**: VueUse
+
+## Performance & Optimization
+
+### Mobile-First Responsive Design
+- Fully responsive layout that adapts to all screen sizes
+- Fluid typography and spacing for optimal readability
+- Touch-friendly interactive elements
+- Optimized navigation for mobile devices
+- Responsive grid system for book listings
+
+### Image Optimization
+- Lazy loading for offscreen images
+- Proper aspect ratio handling to prevent layout shifts
+- Blur-up placeholders during image loading
+
+### Performance Features
+- Code splitting and lazy loading of components
+- Efficient state management with Pinia
+- Optimized build output for production
+
+
+## End-to-End Testing
+
+This project uses Playwright for end-to-end testing, ensuring critical user flows work as expected.
+
+### Running Tests
+
+1. **Prerequisites**:
+   - Node.js and npm installed
+   - Application running in development mode
+   - Test database with seed data
+
+2. **Run all tests**:
+   ```bash
+   npm run test:e2e
+   ```
+
+3. **Run in UI mode** (for debugging):
+   ```bash
+   npx playwright test --ui
+   ```
+
+### Test Coverage
+
+- **Authentication Flows**
+  - User registration
+  - Login with valid/invalid credentials
+  - Session management
+  - Protected route access
+
+### Writing Tests
+
+Tests are located in `tests/e2e/` with the following structure:
+- `auth.spec.ts` - Authentication related tests
+- `test-utils.ts` - Shared test utilities and mocks
 
 
 ## Project Structure
