@@ -30,5 +30,6 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@vueuse/nuxt",
     "@nuxt/ui",
+    "@nuxt/image",
   ],
 });
