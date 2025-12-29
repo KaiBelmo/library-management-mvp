@@ -1,9 +1,9 @@
 <template>
   <div 
-    class="group relative flex flex-col cursor-pointer transition-all duration-500 rounded-4xl p-5 border border-stone-900/5 bg-stone-100/40 hover:bg-stone-100 hover:border-stone-900/10 shadow-sm"
+    class="group relative flex flex-col h-full cursor-pointer transition-all duration-500 rounded-4xl p-5 border border-stone-900/5 bg-stone-100/40 hover:bg-stone-100 hover:border-stone-900/10 shadow-sm"
     @click="$emit('click', book.id)"
   >
-    <div class="relative aspect-3/4 overflow-hidden rounded-2xl bg-stone-200 border-[1.5px] transition-all duration-500 group-hover:shadow-[3px_3px_0px_0px_rgba(0,0,5,1)] group-hover:-translate-y-1">
+    <div class="relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-stone-200 border-[1.5px] transition-all duration-500 group-hover:shadow-[3px_3px_0px_0px_rgba(0,0,5,1)] group-hover:-translate-y-1">
       
       <img
         v-if="book.image"
@@ -11,6 +11,9 @@
         :alt="book.title"
         class="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
         loading="lazy"
+        width="300"
+        height="450"
+        style="aspect-ratio: 2/3;"
       />
       
       <div
