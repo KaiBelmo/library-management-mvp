@@ -1,0 +1,73 @@
+services:
+  db:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: db
+    env_file: .env
+    shm_size: 256m
+    environment:
+      - POSTGRES_SHARED_PRELOAD_LIBRARIES=pg_stat_statements
+      - POSTGRES_MAX_CONNECTIONS=200
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  directus:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: directus
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DIRECTUS_CACHE_ENABLED=true
+      - DIRECTUS_CACHE_TTL=3600
+      - DIRECTUS_CACHE_ENGINE=memory
+      - NODE_OPTIONS=--max-old-space-size=2048
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(wget -q -O - ${DIRECTUS_URL}/server/ping) = 'pong' ]"]
+      interval: 15s
+      timeout: 15s
+      retries: 10
+      start_period: 60s
+
+  directus-sync:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: directus-sync
+    env_file: .env
+    depends_on:
+      directus:
+        condition: service_healthy
+    restart: "no"
+
+  frontend:
+    extends:
+      file: ./frontend/docker-compose.yml
+      service: library-frontend
+    env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      directus:
+        condition: service_healthy
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=2048
+      - NITRO_HOST=0.0.0.0
+      - NITRO_PORT=3000
+    volumes:
+      - /app/node_modules
+    restart: unless-stopped
+
+volumes:
+  db_data:
+    name: library_db_data
+
+networks:
+  default:
+    name: library_network
+    driver: bridge
