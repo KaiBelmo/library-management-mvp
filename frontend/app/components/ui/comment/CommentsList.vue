@@ -26,7 +26,7 @@
             Entry No.
           </span>
           <span class="text-[9px] font-serif italic text-stone-400 mt-1">
-            {{ comment.id.slice(0, 5) }}
+            {{ comment.id?.slice(0, 5) || 'UNKNOWN' }}
           </span>
         </div>
 
@@ -34,7 +34,7 @@
           <div class="flex justify-between items-baseline mb-6">
             <div>
               <h4 class="font-serif text-xl text-stone-900 italic tracking-tight mb-1">
-                {{ comment.author_name }}
+                {{ comment.author_name || 'Anonymous' }}
               </h4>
               <p class="text-[9px] font-black uppercase tracking-[0.2em] text-stone-400">
                 Logged: {{ formatDate(comment.date_created) }}
@@ -52,7 +52,7 @@
           </div>
 
           <p class="text-stone-900 text-sm leading-relaxed font-medium whitespace-pre-wrap max-w-2xl">
-            {{ comment.content }}
+            {{ comment.content || 'No content available' }}
           </p>
         </div>
       </div>

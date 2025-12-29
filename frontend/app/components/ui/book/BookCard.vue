@@ -1,26 +1,29 @@
 <template>
   <div 
-    class="group relative flex flex-col h-full cursor-pointer transition-all duration-500 rounded-4xl p-5 border border-stone-900/5 bg-stone-100/40 hover:bg-stone-100 hover:border-stone-900/10 shadow-sm"
-    @click="$emit('click', book.id)"
+    class="group relative flex flex-col h-full cursor-pointer transition-all duration-500 rounded-4xl p-5 border border-stone-900/5 bg-stone-100/40 hover:bg-stone-100 hover:border-stone-900/10 shadow-sm max-h-[600px]"
+    @click="book.id && $emit('click', book.id)"
   >
-    <div class="relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-stone-200 border-[1.5px] transition-all duration-500 group-hover:shadow-[3px_3px_0px_0px_rgba(0,0,5,1)] group-hover:-translate-y-1">
-      
-      <img
-        v-if="book.image"
-        :src="book.image"
-        :alt="book.title"
-        class="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-        loading="lazy"
-        width="300"
-        height="450"
-        style="aspect-ratio: 2/3;"
-      />
-      
-      <div
-        v-else
-        class="flex h-full w-full flex-col items-center justify-center bg-stone-200"
-      >
-        <UIcon name="i-heroicons-book-open" class="h-14 w-14 text-stone-900/20" />
+    <div class="relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-stone-200 border-[1.5px] border-stone-900/10 transition-all duration-500 group-hover:shadow-[3px_3px_0px_0px_rgba(0,0,5,1)] group-hover:-translate-y-1">
+      <div class="relative w-full h-full">
+        <NuxtImg
+          v-if="book.image"
+          :src="book.image"
+          :alt="book.title"
+          class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+          loading="lazy"
+          width="300"
+          height="450"
+          format="webp"
+          densities="x1 x2"
+          placeholder
+        />
+        
+        <div
+          v-else
+          class="absolute inset-0 flex flex-col items-center justify-center bg-stone-200"
+        >
+          <UIcon name="i-heroicons-book-open" class="h-14 w-14 text-stone-900/20" />
+        </div>
       </div>
     </div>
 
@@ -37,7 +40,7 @@
       </div>
       
       <div class="flex items-center justify-between pt-4 border-t border-stone-200/60">
-        <span class="text-[10px] font-black py-1 px-3 border-1.5 border-stone-900 uppercase tracking-widest text-stone-900 bg-white">
+        <span class="text-[10px] font-black py-1 px-3 border-[1.5px] border-stone-900 uppercase tracking-widest text-stone-900 bg-white">
           {{ book.genre }}
         </span>
         <span class="text-xs font-serif italic text-stone-500">
@@ -71,6 +74,8 @@ defineEmits<Emits>()
 
 const publicationYear = computed(() => {
   if (!props.book.publication_date) return '—'
-  return new Date(props.book.publication_date).getFullYear()
+  // Use a string split if the format is YYYY-MM-DD to avoid timezone shifts
+  // or wrap the display in a span with a hydration suppression
+  return props.book.publication_date.toString().split('-')[0] 
 })
 </script>

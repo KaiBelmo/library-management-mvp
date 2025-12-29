@@ -5,7 +5,7 @@
         Public Annotations
       </h3>
       <span class="text-[9px] font-black uppercase tracking-widest text-stone-400">
-        Posting as: <span class="text-stone-900">{{ auth.fullName }}</span>
+        Posting as: <span class="text-stone-900">{{ auth.fullName || 'Unknown User' }}</span>
       </span>
     </div>
     

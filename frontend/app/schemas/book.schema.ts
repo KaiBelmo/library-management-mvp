@@ -7,6 +7,7 @@ export const bookSchema = z.object({
   genre: z.string().min(1, 'Genre is required').max(50, 'Genre too long'),
   publication_date: z.string().datetime(),
   cover_photo: z.string().uuid(),
+  image: z.string().url().optional(),
   user_created: z.string().uuid(),
   date_created: z.string().datetime(),
   allow_comments: z.boolean().default(true)

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const props = defineProps<{
   label: string
   modelValue?: string | null
@@ -21,16 +20,15 @@ const {
 
 const handleFileChange = async (event: Event) => {
   const fileId = await handleUpload(event)
-  emit('update:modelValue', fileId)
+  if (fileId) {
+    emit('update:modelValue', fileId)
+  }
 }
 </script>
 
-
 <template>
   <div class="space-y-2">
-    <label
-      class="block text-[10px] font-black uppercase tracking-[0.25em] text-black"
-    >
+    <label class="block text-[10px] font-black uppercase tracking-[0.25em] text-black">
       {{ label }}
     </label>
 
@@ -55,12 +53,9 @@ const handleFileChange = async (event: Event) => {
             class="w-5 h-5 text-stone-900"
             :class="{ 'animate-spin': pending }"
           />
-          <span
-            class="text-sm font-medium text-stone-900 uppercase tracking-tight"
-          >
+          <span class="text-sm font-medium text-stone-900 uppercase tracking-tight">
             {{
-              fileName ||
-              (modelValue ? 'Photo Uploaded' : 'Select Volume Cover')
+              fileName || (modelValue ? 'Photo Uploaded' : 'Select Volume Cover')
             }}
           </span>
         </div>
@@ -76,10 +71,12 @@ const handleFileChange = async (event: Event) => {
       v-if="previewUrl"
       class="mt-4 border-[1.5px] border-stone-900 p-2 w-32 bg-stone-50"
     >
-      <img
+      <NuxtImg
         :src="previewUrl"
-        class="w-full aspect-[3/4] object-cover"
+        class="w-full aspect-[2/3] object-cover bg-stone-200"
         alt="Preview"
+        width="128" 
+        height="192"
       />
     </div>
 
