@@ -8,7 +8,7 @@ A modern, mobile-responsive web application for managing library resources, buil
 ## Functional Requirements
 
 ### Book Management
-For detailed implementation information, see the [Composables Documentation](./app/composables/README.md#books-module).
+For detailed implementation information, see the [Composables Documentation](./docs/COMPOSABLES-README.md#books-module).
 
 - **Creating Books**: Add new books with cover images and metadata
 - **Book Information**: View detailed book information and descriptions  
@@ -16,14 +16,14 @@ For detailed implementation information, see the [Composables Documentation](./a
 - **Deleting Books**: Remove books with confirmation dialogs
 
 ### Search and Filtering
-For detailed implementation information, see the [Composables Documentation](./app/composables/README.md#books-module).
+For detailed implementation information, see the [Composables Documentation](./docs/COMPOSABLES-README.md#books-module).
 
 - **Book Search**: Real-time search by title, author, and genre
 - **Date Filtering**: Filter books by publication date ranges
 - **Sorting**: Sort by title, publication date, or creation date
 
 ### Comments on Books
-For detailed implementation information, see the [Composables Documentation](./app/composables/README.md#books-module).
+For detailed implementation information, see the [Composables Documentation](./docs/COMPOSABLES-README.md#books-module).
 
 - **Comment Toggle**: Enable/disable comments per book
 - **Adding Comments**: Form validation and real-time updates
@@ -84,7 +84,7 @@ For detailed implementation information, see the [Composables Documentation](./a
 
 ## End-to-End Testing
 
-This project uses Playwright for end-to-end testing. For detailed testing information and architecture, see the [Composables Documentation](./app/composables/README.md#testing-considerations).
+This project uses Playwright for end-to-end testing. For detailed testing information and architecture, see the [Composables Documentation](./docs/COMPOSABLES-README.md#testing-considerations).
 
 ### Running Tests
 
