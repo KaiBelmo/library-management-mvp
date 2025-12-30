@@ -38,6 +38,8 @@
     "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.3",
     "@vitejs/plugin-vue": "^6.0.3",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^20.0.11",
     "vitest": "^3.2.4"
   }
 }
